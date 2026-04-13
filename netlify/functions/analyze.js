@@ -3,18 +3,16 @@ exports.config = { timeout: 30 };
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-sonnet-4-6";
 
-// ── CARBOHYDRATE REFERENCE TABLE ─────────────────────────────────────────────
 const CARB_TABLE = {
-  "dry kibble":         { carb_pct: 52, fermentation: "fast", moisture: 10, oral_health_base: 4 },
-  "wet/canned food":    { carb_pct: 30, fermentation: "moderate", moisture: 78, oral_health_base: 6 },
-  "raw diet":           { carb_pct: 8,  fermentation: "slow", moisture: 70, oral_health_base: 8 },
-  "mixed kibble and wet": { carb_pct: 42, fermentation: "moderate", moisture: 35, oral_health_base: 5 },
-  "prescription diet":  { carb_pct: 38, fermentation: "moderate", moisture: 10, oral_health_base: 6 },
-  "home cooked":        { carb_pct: 25, fermentation: "variable", moisture: 60, oral_health_base: 7 },
-  "fresh/lightly cooked": { carb_pct: 22, fermentation: "slow", moisture: 65, oral_health_base: 7 },
-  "air dried":          { carb_pct: 25, fermentation: "slow", moisture: 12, oral_health_base: 7 },
-  "freeze dried":       { carb_pct: 10, fermentation: "very slow", moisture: 3, oral_health_base: 9 },
-  "semi-moist":         { carb_pct: 45, fermentation: "very fast", moisture: 25, oral_health_base: 3 },
+  "dry kibble":           { carb_pct: 52, fermentation: "fast",      moisture: 10, oral_health_base: 4 },
+  "wet/canned food":      { carb_pct: 30, fermentation: "moderate",  moisture: 78, oral_health_base: 6 },
+  "raw diet":             { carb_pct: 8,  fermentation: "slow",      moisture: 70, oral_health_base: 8 },
+  "mixed kibble and wet": { carb_pct: 42, fermentation: "moderate",  moisture: 35, oral_health_base: 5 },
+  "prescription diet":    { carb_pct: 38, fermentation: "moderate",  moisture: 10, oral_health_base: 6 },
+  "home cooked":          { carb_pct: 25, fermentation: "variable",  moisture: 60, oral_health_base: 7 },
+  "air dried":            { carb_pct: 25, fermentation: "slow",      moisture: 12, oral_health_base: 7 },
+  "freeze dried":         { carb_pct: 10, fermentation: "very slow", moisture: 3,  oral_health_base: 9 },
+  "semi-moist":           { carb_pct: 45, fermentation: "very fast", moisture: 25, oral_health_base: 3 },
 };
 
 function getDietData(dietType) {
@@ -25,52 +23,43 @@ function getDietData(dietType) {
   return { carb_pct: 40, fermentation: "moderate", moisture: 20, oral_health_base: 5, key: "unknown" };
 }
 
-// ── DENTAL SYSTEM PROMPT ─────────────────────────────────────────────────────
-const DENTAL_SYSTEM_PROMPT = `You are a veterinary dental screening assistant. Analyze buccal photos of dog teeth and return a JSON scoring object.
+const DENTAL_SYSTEM_PROMPT = `You are a veterinary dental screening assistant. Analyze buccal photos of dog teeth.
 
-CLINICAL FOCUS: Upper PM4 (carnassial tooth) and M1 are primary indicators.
+CLINICAL FOCUS: Upper PM4 (carnassial) and M1 are primary indicators.
+TARTAR (0-3): 0=none, 1=mild <25%, 2=moderate 25-75%, 3=severe >75%
+GINGIVAL (0-3): 0=healthy pink, 1=mild redness, 2=obvious swelling, 3=severe/recession
+STRUCTURAL (0-3): 0=intact, 1=minor chips, 2=fracture or missing, 3=severe
+RISK: GREEN=0-2, YELLOW=3-5, ORANGE=6-7, RED=8-9
 
-SCORING:
-- tartar: 0=none, 1=mild <25%, 2=moderate 25-75%, 3=severe >75%
-- gingival: 0=healthy pink, 1=mild redness, 2=obvious redness/swelling, 3=severe/recession
-- structural: 0=intact, 1=minor chips, 2=fracture or missing teeth, 3=severe damage
-- overall_risk: GREEN(0-2), YELLOW(3-5), ORANGE(6-7), RED(8-9)
+Never state specific diagnoses. Be a screener, not a diagnostician.
+Respond with ONLY a raw JSON object. Start with { end with }. No markdown.`;
 
-Never state specific diagnoses. You are a screener, not a diagnostician.
+const NUTRITION_SYSTEM_PROMPT = `You are writing the nutrition section of a canine dental screening report. Your voice is that of a knowledgeable friend who happens to be a veterinary dental specialist — warm, caring, conversational, genuinely helpful. You never talk down to the owner. You always use the dog's name.
 
-Your response must be ONLY a raw JSON object starting with { and ending with }. No markdown, no explanation.`;
+TONE — NON-NEGOTIABLE:
+- Never give orders. Suggest, invite, wonder. Use phrases like "you might want to consider...", "one thing worth trying could be...", "it might be worth a chat with your vet about..."
+- Every suggestion must explain WHY in plain language — the mechanism, never a lecture
+- Use the dog's name throughout
+- Severity calibration: GREEN = cheerful and encouraging; YELLOW = gentle caring nudge; ORANGE = clear and caring, a friend who needs you to hear this; RED = warm but firm and serious — this matters
 
-// ── NUTRITION SYSTEM PROMPT ──────────────────────────────────────────────────
-const NUTRITION_SYSTEM_PROMPT = `You are writing the nutrition and oral health section of a canine dental screening report. Your voice is that of a knowledgeable friend who happens to be a veterinary dental specialist — warm, caring, conversational, and genuinely helpful. You never talk down to the owner. You use the dog's name throughout.
+NUTRITIONAL SCIENCE:
+- Carbs ferment into acids within minutes, dropping oral pH below 5.5 (enamel demineralization threshold)
+- Each meal = one acid attack. Free feeding = continuous acid exposure all day
+- High-quality animal protein supports gum tissue via collagen precursors
+- Soft/glycerin-containing treats coat teeth and feed bacteria directly
+- Sodium hexametaphosphate (HMP) chelates calcium preventing calculus — VOHC mechanism
+- Ascophyllum nodosum (seaweed kelp) has VOHC acceptance for plaque/tartar reduction
+- Small breeds: every dietary factor is amplified due to tooth crowding
 
-TONE RULES — NON-NEGOTIABLE:
-- Never give orders or definitive instructions. Instead suggest, wonder, invite. Examples of correct phrasing: "you might want to consider...", "one thing that could be worth trying is...", "it might be worth having a chat with your vet about...", "a lot of dogs do really well with...", "something that often helps in situations like this is..."
-- Every suggestion must come with a plain-language explanation of WHY — the mechanism, the science, the reason — explained as you would to a curious friend, never as a lecture
-- Use the dog's name (provided in the profile) throughout — not "your dog"
-- Match tone to severity: GREEN = cheerful and encouraging; YELLOW = gentle caring nudge; ORANGE = clear and caring, a friend who wants you to act; RED = warm but firm and serious, this matters and the owner needs to hear it clearly
-- The owner should finish reading feeling like they genuinely understand their dog's oral health situation, not just handed a to-do list
+OHDS SCORING (base from diet format, then adjust):
+- Feeding once daily: +0.5; twice daily: 0; free fed: -2.0
+- High-quality animal protein: +0.5; plant-based only: -0.5
+- Soft/sugary treats daily: -1.5; table scraps: -1.0; VOHC dental chews only: +0.5; no treats: +0.5
+- Daily brushing: +1.5; occasional brushing: +0.5; water additive: +0.5; enzymatic toothpaste: +0.5
+- Professional cleaning within a year: +0.5; never/unknown: -0.5
+Cap between 1 and 10.
 
-NUTRITIONAL SCIENCE TO APPLY:
-1. CARBOHYDRATES: Oral bacteria ferment dietary starches into organic acids within minutes of eating, dropping oral pH below 5.5 — the enamel demineralization threshold. The format of the food determines fermentation speed. Use the estimated carb percentage provided.
-2. FEEDING FREQUENCY: Each meal = one acid attack on teeth. Free feeding = continuous acid exposure throughout the day — significantly worse for oral health.
-3. PROTEIN QUALITY: High-quality animal protein supports gum tissue integrity via collagen precursors. Plant-based proteins (pea, soy) lack the full amino acid profile for optimal periodontal ligament health.
-4. Ca:P RATIO: Ideal 1.2:1 to 1.4:1. Disrupted ratios affect alveolar bone density — the bone that holds teeth in. Raw meat without bone often has excess phosphorus; high-grain kibbles also disrupt this.
-5. MOISTURE CONTENT: Higher moisture foods provide oral flushing that partially offsets carbohydrate impact. Kibble (10% moisture) provides almost no flushing.
-6. TREATS: Soft treats, glycerin-containing treats, and sugary treats coat teeth and provide direct bacterial fuel. Even treats given once daily can significantly undermine an otherwise good diet if they are soft or high in sugar.
-7. BENEFICIAL INGREDIENTS: Sodium hexametaphosphate (HMP) chelates calcium in saliva preventing calculus crystallization (VOHC-accepted mechanism). Ascophyllum nodosum (kelp/seaweed) has VOHC acceptance for plaque/tartar reduction. Zinc compounds have antimicrobial plaque-inhibiting properties. Cranberry extract PACs prevent bacterial adhesion to tooth surfaces.
-8. HARMFUL INGREDIENTS: Glycerin/glycerol (hygroscopic, coats teeth), corn syrup or molasses (direct bacterial fuel), carrageenan (inflammatory, linked to gingival issues), propylene glycol (biofilm persistence in semi-moist).
-9. SMALL BREED AMPLIFICATION: In small breeds, periodontal disease risk is dramatically elevated due to tooth crowding. Every dietary factor has an amplified effect. This must be clearly but kindly communicated.
-
-OHDS SCORING (Oral Health Diet Score 1-10):
-Start with the base score for diet format, then adjust:
-- Feeding frequency once daily: +0.5; twice daily: 0; free fed: -2.0
-- High-quality animal protein: +0.5; plant-based: -0.5
-- Treats: VOHC dental chews only: +0.5; no treats: +0.5; soft/sugary treats daily: -1.5; bully sticks/hard chews: -0.3; table scraps: -1.0
-- Home care: daily brushing: +1.5; occasional brushing: +0.5; water additive: +0.5; enzymatic toothpaste: +0.5; none: 0
-- Last professional cleaning within a year: +0.5; never: -0.5
-Cap the score between 1 and 10.
-
-Your response must be ONLY a raw JSON object starting with { and ending with }. No markdown, no code fences.`;
+Respond with ONLY a raw JSON object. Start with { end with }. No markdown.`;
 
 async function callClaude(systemPrompt, messages, maxTokens) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -83,7 +72,7 @@ async function callClaude(systemPrompt, messages, maxTokens) {
       "x-api-key": apiKey,
       "anthropic-version": "2023-06-01",
     },
-    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens || 1500, system: systemPrompt, messages }),
+    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens || 1200, system: systemPrompt, messages }),
   });
 
   if (!res.ok) {
@@ -93,58 +82,50 @@ async function callClaude(systemPrompt, messages, maxTokens) {
 
   const data = await res.json();
   const text = data.content.filter(b => b.type === "text").map(b => b.text).join("");
-  console.log("Response preview:", text.substring(0, 200));
+  console.log("Response preview:", text.substring(0, 150));
   return text;
 }
 
 function extractJSON(text) {
   try { return JSON.parse(text.trim()); } catch(e) {}
   try { return JSON.parse(text.replace(/```[\w]*\n?/g, "").trim()); } catch(e) {}
-  const start = text.indexOf("{");
-  const end = text.lastIndexOf("}");
-  if (start !== -1 && end > start) {
-    try { return JSON.parse(text.slice(start, end + 1)); } catch(e) {}
-  }
-  throw new Error("No valid JSON in response: " + text.substring(0, 150));
+  const s = text.indexOf("{"), e2 = text.lastIndexOf("}");
+  if (s !== -1 && e2 > s) { try { return JSON.parse(text.slice(s, e2 + 1)); } catch(e) {} }
+  throw new Error("No JSON found: " + text.substring(0, 100));
 }
 
 function fallbackDental() {
   return {
-    tartar: { right: 0, left: 0, composite: 0, notes: "Could not assess from photos" },
-    gingival: { right: 0, left: 0, composite: 0, notes: "Could not assess from photos" },
-    structural: { score: 0, notes: "Could not assess from photos" },
+    tartar: { right: 0, left: 0, composite: 0, notes: "Could not assess" },
+    gingival: { right: 0, left: 0, composite: 0, notes: "Could not assess" },
+    structural: { score: 0, notes: "Could not assess" },
     overall_risk: "YELLOW", composite_score: 3,
-    image_quality: { right: "marginal", left: "marginal", notes: "Better lighting needed" },
-    key_findings: ["We had difficulty reading these photos clearly — retaking them in bright natural light with the cheek gently pulled back would give us a much better picture"],
-    owner_summary: "We weren't able to get a clear enough read from these photos to give you a confident score. The most common reason is lighting — try again outside or near a bright window, and gently pull the cheek back so we can see that large back tooth clearly.",
+    image_quality: { right: "marginal", left: "marginal", notes: "Retake in bright light" },
+    key_findings: ["Photos were unclear — please retake outdoors in natural light with cheek gently pulled back"],
+    owner_summary: "We couldn't get a clear enough read from these photos. Try again outside in bright light with the cheek pulled back so the large back tooth is clearly visible.",
     vet_urgency: "routine", nutrition_flags: [], confidence: "low"
   };
 }
 
 function fallbackNutrition(dogName, dietType) {
+  const dd = getDietData(dietType);
   return {
-    ohds_score: 5,
-    estimated_carb_pct: getDietData(dietType).carb_pct,
+    ohds_score: dd.oral_health_base,
+    estimated_carb_pct: dd.carb_pct,
     diet_oral_health_rating: "fair",
-    diet_assessment: `We weren't able to complete the full nutritional analysis for ${dogName} this time, but the dental scan results above still give you a useful picture of where things stand.`,
-    diet_mechanism: "The type of food a dog eats has a surprisingly direct effect on their teeth. Carbohydrates in food are fermented by oral bacteria into acids within minutes of eating — and those acids are what kick off the process that leads to plaque and eventually tartar.",
-    treat_analysis: "Treats are often the hidden factor in oral health. Even a dog on a great main diet can develop more tartar than expected if they're getting soft or sugary treats regularly.",
-    oral_ph_impact: "Oral pH is the key number — when it drops below 5.5, enamel starts to demineralize. Diet is the biggest driver of how often and how severely that happens.",
-    primary_recommendation: `Getting a full picture of ${dogName}'s diet with your vet at the next check-up would be a really worthwhile conversation.`,
-    food_recommendations: [
-      { category: "Dental chews", recommendation: `If ${dogName} isn't already getting a daily dental chew, it might be worth looking into the ones that carry the VOHC seal of acceptance — it means they've been independently tested and actually shown to reduce plaque or tartar.`, priority: "medium", vohc_approved: true, mechanism: "The VOHC seal means the product has passed independent clinical testing — it's the gold standard for knowing a dental product actually does what it claims." }
-    ],
-    ingredients_to_seek: ["sodium hexametaphosphate (HMP)", "Ascophyllum nodosum (seaweed)", "zinc ascorbate"],
-    ingredients_to_avoid: ["corn syrup or molasses", "glycerin as a primary ingredient", "carrageenan"],
-    home_care_tips: [`Even brushing ${dogName}'s teeth just a few times a week with a dog-safe enzymatic toothpaste can make a meaningful difference — it doesn't have to be every day to help.`],
-    action_plan: {
-      day_30: "Take a look at the treat frequency and types — that's often the quickest win",
-      day_60: "Consider a conversation with your vet about dental diet options",
-      day_90: "Rescan with DentalPaw to see how things are tracking"
-    },
-    action_plan_intro: `Here's a gentle suggested path forward for ${dogName} — nothing drastic, just small steps that tend to add up over time.`,
+    diet_assessment: `We weren't able to complete the full nutritional analysis for ${dogName} this time, but the dental scores above still give you a useful picture.`,
+    diet_mechanism: "The type of food a dog eats has a direct effect on their teeth. Carbohydrates are fermented by oral bacteria into acids within minutes of eating — and those acids are what drive plaque and tartar formation.",
+    treat_analysis: "Treats are often the hidden factor in oral health. Even a great main diet can be undermined by soft or sugary treats given regularly.",
+    oral_ph_impact: "When oral pH drops below 5.5, enamel starts to demineralise. Diet is the biggest driver of how often that happens.",
+    primary_recommendation: `A conversation with your vet about ${dogName}'s diet at the next check-up would be really worthwhile.`,
+    food_recommendations: [{ category: "Dental chews", recommendation: `If ${dogName} isn't already getting a daily dental chew, it might be worth looking into VOHC-accepted options — they've been independently tested and shown to actually reduce plaque or tartar.`, priority: "medium", vohc_approved: true, mechanism: "The VOHC seal means independent clinical testing confirmed the product works as claimed." }],
+    ingredients_to_seek: ["sodium hexametaphosphate (HMP)", "Ascophyllum nodosum (seaweed)", "zinc compounds"],
+    ingredients_to_avoid: ["corn syrup or molasses", "glycerin as primary ingredient", "carrageenan"],
+    home_care_tips: [`Even brushing ${dogName}'s teeth a few times a week with enzymatic toothpaste can make a real difference.`],
+    action_plan_intro: `Here's a gentle suggested path forward for ${dogName}.`,
+    action_plan: { day_30: "Review treat types and frequency", day_60: "Consider discussing dental diet options with your vet", day_90: "Rescan with DentalPaw to track progress" },
     recheck_days: 60,
-    positive_note: `The fact that you're paying this much attention to ${dogName}'s dental health already puts you well ahead of most dog owners — and that genuinely matters for their long-term health.`
+    positive_note: `The fact that you're paying attention to ${dogName}'s dental health already puts you well ahead of most dog owners.`
   };
 }
 
@@ -152,11 +133,11 @@ function breedFlags(breed, age) {
   const b = (breed || "").toLowerCase();
   const flags = [];
   if (["chihuahua","yorkie","yorkshire","maltese","dachshund","pomeranian","shih tzu","bichon","miniature"].some(x => b.includes(x)))
-    flags.push("SMALL BREED: dramatically elevated periodontal risk due to tooth crowding — all dietary factors have amplified effect");
+    flags.push("SMALL BREED: elevated periodontal risk, all dietary factors amplified");
   if (["bulldog","pug","boston terrier","boxer"].some(x => b.includes(x)))
-    flags.push("BRACHYCEPHALIC: dental crowding and malocclusion common, increases plaque trapping");
-  if (parseFloat(age) >= 7) flags.push("SENIOR: heightened periodontal risk, findings and dietary suggestions deserve extra weight");
-  if (parseFloat(age) <= 2) flags.push("YOUNG DOG: any significant tartar at this age is an early warning sign worth taking seriously");
+    flags.push("BRACHYCEPHALIC: crowding increases plaque trapping");
+  if (parseFloat(age) >= 7) flags.push("SENIOR: heightened periodontal risk");
+  if (parseFloat(age) <= 2) flags.push("YOUNG: any significant tartar is an early warning");
   return flags;
 }
 
@@ -175,10 +156,9 @@ exports.handler = async (event) => {
   try { body = JSON.parse(event.body); }
   catch { return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid request body" }) }; }
 
-  const { dogProfile, images } = body;
-  if (!dogProfile || !images || !images.right || !images.right.base64) {
-    return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Missing required fields" }) };
-  }
+  const { dogProfile, images, mode } = body;
+
+  if (!dogProfile) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Missing dogProfile" }) };
 
   const {
     name, breed, age, sex, weight,
@@ -190,123 +170,98 @@ exports.handler = async (event) => {
   const dietData = getDietData(dietType);
   const flags = breedFlags(breed, age);
 
-  console.log("Analysing:", breed, age + "yrs", "Diet:", dietType, "| Payload:", Math.round(event.body.length/1024) + "KB");
+  // ── MODE: dental — photo analysis only ──────────────────────────────────────
+  if (mode === "dental") {
+    if (!images || !images.right || !images.right.base64) {
+      return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Missing images for dental mode" }) };
+    }
 
-  // ── Build dental content blocks ──────────────────────────────────────────────
-  const dentalContent = [];
-  dentalContent.push({ type: "text", text: "RIGHT BUCCAL VIEW (right side, upper carnassial/PM4 area):" });
-  dentalContent.push({ type: "image", source: { type: "base64", media_type: images.right.mediaType || "image/jpeg", data: images.right.base64 }});
+    console.log("DENTAL MODE:", breed, age + "yrs | Payload:", Math.round(event.body.length/1024) + "KB");
 
-  if (images.left?.base64) {
-    dentalContent.push({ type: "text", text: "LEFT BUCCAL VIEW:" });
-    dentalContent.push({ type: "image", source: { type: "base64", media_type: images.left.mediaType || "image/jpeg", data: images.left.base64 }});
-  }
-  if (images.optionalFront?.base64) {
-    dentalContent.push({ type: "text", text: "FRONTAL VIEW (optional):" });
-    dentalContent.push({ type: "image", source: { type: "base64", media_type: images.optionalFront.mediaType || "image/jpeg", data: images.optionalFront.base64 }});
-  }
-  if (images.optionalLower?.base64) {
-    dentalContent.push({ type: "text", text: "LOWER BUCCAL VIEW (optional):" });
-    dentalContent.push({ type: "image", source: { type: "base64", media_type: images.optionalLower.mediaType || "image/jpeg", data: images.optionalLower.base64 }});
-  }
+    const content = [];
+    content.push({ type: "text", text: "RIGHT BUCCAL VIEW:" });
+    content.push({ type: "image", source: { type: "base64", media_type: images.right.mediaType || "image/jpeg", data: images.right.base64 }});
 
-  dentalContent.push({ type: "text", text:
-    `Dog: ${breed}, ${age} years, ${sex}${weight ? ", " + weight + "lbs" : ""}
-${flags.length > 0 ? "BREED/AGE FLAGS: " + flags.join("; ") : ""}
-Food: ${currentFood || "unknown"} (${dietType || "unknown"})
-Treats: ${treats || "none"} | Feeding schedule: ${feedingSchedule || "unknown"}
+    if (images.left?.base64) {
+      content.push({ type: "text", text: "LEFT BUCCAL VIEW:" });
+      content.push({ type: "image", source: { type: "base64", media_type: images.left.mediaType || "image/jpeg", data: images.left.base64 }});
+    }
+    if (images.optionalFront?.base64) {
+      content.push({ type: "text", text: "FRONTAL VIEW:" });
+      content.push({ type: "image", source: { type: "base64", media_type: images.optionalFront.mediaType || "image/jpeg", data: images.optionalFront.base64 }});
+    }
+    if (images.optionalLower?.base64) {
+      content.push({ type: "text", text: "LOWER VIEW:" });
+      content.push({ type: "image", source: { type: "base64", media_type: images.optionalLower.mediaType || "image/jpeg", data: images.optionalLower.base64 }});
+    }
+
+    content.push({ type: "text", text:
+      `Dog: ${breed}, ${age}yrs, ${sex}${weight ? ", " + weight + "lbs" : ""}
+${flags.length > 0 ? "Flags: " + flags.join("; ") : ""}
+Food: ${currentFood || "unknown"} (${dietType})
 Symptoms: ${symptoms?.length > 0 ? symptoms.join(", ") : "none"}
 
-Score the dental photos. Return JSON:
-{"tartar":{"right":0,"left":0,"composite":0,"notes":""},"gingival":{"right":0,"left":0,"composite":0,"notes":""},"structural":{"score":0,"notes":""},"overall_risk":"GREEN","composite_score":0,"image_quality":{"right":"good","left":"good","notes":""},"key_findings":[""],"owner_summary":"","vet_urgency":"routine","nutrition_flags":[""],"confidence":"high"}`
-  });
+Return JSON:
+{"tartar":{"right":0,"left":0,"composite":0,"notes":""},"gingival":{"right":0,"left":0,"composite":0,"notes":""},"structural":{"score":0,"notes":""},"overall_risk":"GREEN","composite_score":0,"image_quality":{"right":"good","left":"good","notes":""},"key_findings":[""],"owner_summary":"2-3 warm sentences using dog name ${dogName}","vet_urgency":"routine","nutrition_flags":[""],"confidence":"high"}`
+    });
 
-  // ── Build nutrition prompt ────────────────────────────────────────────────────
-  const nutritionUserPrompt =
+    let dental = fallbackDental();
+    try {
+      const text = await callClaude(DENTAL_SYSTEM_PROMPT, [{ role: "user", content }], 1000);
+      dental = extractJSON(text);
+      console.log("Dental OK:", dental.overall_risk);
+    } catch(e) { console.error("Dental error:", e.message); }
+
+    return {
+      statusCode: 200,
+      headers: CORS,
+      body: JSON.stringify({ success: true, dental, meta: { mode: "dental", analyzedAt: new Date().toISOString() } }),
+    };
+  }
+
+  // ── MODE: nutrition — no images, uses dental results ────────────────────────
+  if (mode === "nutrition") {
+    const { dentalResults } = body;
+    if (!dentalResults) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Missing dentalResults for nutrition mode" }) };
+
+    console.log("NUTRITION MODE:", breed, age + "yrs, OHDS base:", dietData.oral_health_base);
+
+    const nutritionPrompt =
 `DOG NAME: ${dogName}
-BREED: ${breed} | AGE: ${age} years | SEX: ${sex}${weight ? " | WEIGHT: " + weight + "lbs" : ""}
-BREED/AGE FLAGS: ${flags.length > 0 ? flags.join("; ") : "none"}
+BREED: ${breed} | AGE: ${age}yrs | SEX: ${sex}${weight ? " | " + weight + "lbs" : ""}
+FLAGS: ${flags.length > 0 ? flags.join("; ") : "none"}
+DENTAL FINDINGS: Overall risk ${dentalResults.overall_risk}, composite ${dentalResults.composite_score}/9
+Tartar: ${dentalResults.tartar?.composite}/3, Gums: ${dentalResults.gingival?.composite}/3, Structure: ${dentalResults.structural?.score}/3
+Key findings: ${(dentalResults.key_findings || []).join("; ")}
 
-DIET PROFILE:
-- Main food: ${currentFood || "unknown"}
-- Diet type: ${dietType || "unknown"}
-- Estimated carbohydrate %: ~${dietData.carb_pct}%
-- Fermentation speed: ${dietData.fermentation}
-- Moisture content: ~${dietData.moisture}%
-- Diet oral health base score: ${dietData.oral_health_base}/10
-- Primary protein source: ${proteinSource || "unknown"}
-- Feeding schedule: ${feedingSchedule || "unknown"}
+DIET: ${currentFood} (${dietType}) | Est. carbs: ~${dietData.carb_pct}% | Fermentation: ${dietData.fermentation} | Moisture: ~${dietData.moisture}%
+Base oral health score for this diet format: ${dietData.oral_health_base}/10
+Protein source: ${proteinSource || "unknown"}
+Feeding schedule: ${feedingSchedule || "unknown"}
+Treats: ${treats || "none"} | Frequency: ${treatFrequency || "unknown"}
+Home care: ${homeCare || "none"}
+Body condition: ${bodyCondition || "unknown"}
+Last cleaning: ${lastCleaning || "unknown"}
+Symptoms: ${symptoms?.length > 0 ? symptoms.join(", ") : "none"}
 
-TREAT PROFILE:
-- Treat types: ${treats || "none"}
-- Treat frequency: ${treatFrequency || "unknown"}
-
-HOME DENTAL CARE: ${homeCare || "none"}
-BODY CONDITION: ${bodyCondition || "unknown"}
-LAST PROFESSIONAL CLEANING: ${lastCleaning || "unknown"}
-SYMPTOMS NOTICED: ${symptoms?.length > 0 ? symptoms.join(", ") : "none"}
-
-Using the OHDS scoring system from your instructions, calculate this dog's score and provide a full nutrition and oral health analysis written in the warm, educational, friend-who-happens-to-be-a-vet-dentist tone you've been instructed to use.
+Write the nutrition analysis in the warm veterinary friend tone. Calculate the OHDS score. Use ${dogName}'s name throughout.
 
 Return JSON:
-{
-  "ohds_score": 1-10,
-  "estimated_carb_pct": number,
-  "diet_oral_health_rating": "poor|fair|good|excellent",
-  "diet_assessment": "2-3 warm conversational sentences summarising the diet picture using the dog's name — educational, kind, honest",
-  "diet_mechanism": "2-3 sentences explaining in plain language how this specific diet type (format, carb level, moisture) affects this dog's teeth — use the dog's name, explain the WHY, no jargon",
-  "treat_analysis": "Specific analysis of this dog's treat situation and its oral health impact — warm, specific, educational. Explain why soft/sugary treats are particularly problematic if relevant.",
-  "oral_ph_impact": "A plain-language explanation of how this dog's overall diet affects the oral pH environment and bacterial activity — use an analogy if it helps, keep it friendly",
-  "primary_recommendation": "The single most impactful suggested change, written as a friendly suggestion with a clear reason why — never a command, always an invitation",
-  "food_recommendations": [
-    {
-      "category": "category name",
-      "recommendation": "specific friendly suggestion written as if from a caring friend — not an instruction",
-      "priority": "high|medium|low",
-      "vohc_approved": true|false,
-      "mechanism": "plain-language explanation of why this would help — the actual biology, explained simply"
-    }
-  ],
-  "ingredients_to_seek": ["ingredient — brief reason why"],
-  "ingredients_to_avoid": ["ingredient — brief reason why"],
-  "home_care_tips": ["friendly suggestion — why it helps"],
-  "action_plan_intro": "1-2 sentences framing the plan — for GREEN/YELLOW/ORANGE use journey language ('here is a gentle path forward...'); for RED be warm but serious and clear about why acting matters",
-  "action_plan": {
-    "day_30": "specific first step — framed as a suggestion, with a reason",
-    "day_60": "what to assess or adjust — framed conversationally",
-    "day_90": "reassessment and DentalPaw rescan"
-  },
-  "recheck_days": 30|60|90,
-  "positive_note": "one genuinely warm sentence using the dog's name that acknowledges something good — the owner's effort, a positive finding, or a genuine strength in the current approach"
-}`;
+{"ohds_score":5,"estimated_carb_pct":40,"diet_oral_health_rating":"fair","diet_assessment":"","diet_mechanism":"","treat_analysis":"","oral_ph_impact":"","primary_recommendation":"","food_recommendations":[{"category":"","recommendation":"","priority":"medium","vohc_approved":false,"mechanism":""}],"ingredients_to_seek":[""],"ingredients_to_avoid":[""],"home_care_tips":[""],"action_plan_intro":"","action_plan":{"day_30":"","day_60":"","day_90":""},"recheck_days":60,"positive_note":""}`;
 
-  // ── Run both API calls in parallel ───────────────────────────────────────────
-  const [dentalResult, nutritionResult] = await Promise.allSettled([
-    callClaude(DENTAL_SYSTEM_PROMPT, [{ role: "user", content: dentalContent }], 1200),
-    callClaude(NUTRITION_SYSTEM_PROMPT, [{ role: "user", content: nutritionUserPrompt }], 1400),
-  ]);
+    let nutrition = fallbackNutrition(dogName, dietType);
+    try {
+      const text = await callClaude(NUTRITION_SYSTEM_PROMPT, [{ role: "user", content: nutritionPrompt }], 1400);
+      nutrition = extractJSON(text);
+      console.log("Nutrition OK, OHDS:", nutrition.ohds_score);
+    } catch(e) { console.error("Nutrition error:", e.message); }
 
-  let dental = fallbackDental();
-  let nutrition = fallbackNutrition(dogName, dietType);
+    return {
+      statusCode: 200,
+      headers: CORS,
+      body: JSON.stringify({ success: true, nutrition, meta: { mode: "nutrition", analyzedAt: new Date().toISOString(), dietData } }),
+    };
+  }
 
-  if (dentalResult.status === "fulfilled") {
-    try { dental = extractJSON(dentalResult.value); console.log("Dental OK:", dental.overall_risk); }
-    catch (e) { console.error("Dental parse error:", e.message); }
-  } else { console.error("Dental API error:", dentalResult.reason?.message); }
-
-  if (nutritionResult.status === "fulfilled") {
-    try { nutrition = extractJSON(nutritionResult.value); console.log("Nutrition OK, OHDS:", nutrition.ohds_score); }
-    catch (e) { console.error("Nutrition parse error:", e.message); }
-  } else { console.error("Nutrition API error:", nutritionResult.reason?.message); }
-
-  return {
-    statusCode: 200,
-    headers: CORS,
-    body: JSON.stringify({
-      success: true,
-      dental,
-      nutrition,
-      meta: { analyzedAt: new Date().toISOString(), model: MODEL, dietData }
-    }),
-  };
+  return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid mode. Use 'dental' or 'nutrition'." }) };
 };
