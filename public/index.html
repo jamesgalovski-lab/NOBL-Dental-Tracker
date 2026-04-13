@@ -998,10 +998,10 @@ function fileToBase64(file) {
 
 function resizeImageIfNeeded(file) {
   return new Promise((resolve) => {
-    // Keep well under Netlify's 6MB body limit and Anthropic's size limits
-    // Target: max 800px on longest side, 0.75 quality = typically 80-150KB
-    const MAX_DIMENSION = 800;
-    const QUALITY = 0.75;
+    // Aggressively small - must complete 2 API calls within 30s
+    // Target: max 600px on longest side, 0.65 quality = typically 40-80KB per image
+    const MAX_DIMENSION = 600;
+    const QUALITY = 0.65;
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
