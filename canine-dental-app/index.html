@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DentalPaw — Canine Dental Screening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<!-- Uploadcare File Uploader -->
+
+
+
+
+<style>
+  /* ── TOKENS ── */
+  :root {
+    --cream:    #FAF7F2;
+    --warm-white: #FFFDF9;
+    --bark:     #2C1810;
+    --bark-mid: #5C3D2E;
+    --bark-light: #8B6355;
+    --sage:     #4A7C59;
+    --sage-light: #6A9E78;
+    --sage-pale: #E8F2EB;
+    --amber:    #D4831A;
+    --amber-pale: #FDF3E3;
+    --rose:     #C0392B;
+    --rose-pale: #FDECEA;
+    --sand:     #E8DDD0;
+    --shadow:   rgba(44,24,16,0.08);
+    --shadow-md: rgba(44,24,16,0.14);
+
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+
+    --radius: 16px;
+    --radius-sm: 10px;
+    --radius-lg: 24px;
+  }
+
+  /* ── RESET ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background: var(--cream);
+    color: var(--bark);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── LAYOUT ── */
+  .app { max-width: 720px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    padding: 48px 0 32px;
+    position: relative;
+  }
+  .header::after {
+    content: '';
+    display: block;
+    width: 60px; height: 3px;
+    background: var(--sage);
+    margin: 20px auto 0;
+    border-radius: 2px;
+  }
+  .logo-mark {
+    width: 64px; height: 64px;
+    background: var(--bark);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+  }
+  .header h1 {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 5vw, 40px);
+    font-weight: 700;
+    color: var(--bark);
+    letter-spacing: -0.5px;
+  }
+  .header p {
+    color: var(--bark-light);
+    font-size: 15px;
+    margin-top: 8px;
+    font-weight: 300;
+  }
+
+  /* ── STEP INDICATOR ── */
+  .steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 32px 0;
+  }
+  .step-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    background: var(--sand);
+    color: var(--bark-light);
+    flex-shrink: 0;
+  }
+  .step-dot.active { background: var(--bark); color: white; }
+  .step-dot.complete { background: var(--sage); color: white; }
+  .step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--sand);
+    max-width: 60px;
+    transition: background 0.3s ease;
+  }
+  .step-line.complete { background: var(--sage); }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--warm-white);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 16px var(--shadow);
+    border: 1px solid rgba(232,221,208,0.6);
+  }
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--bark);
+  }
+  .card-subtitle {
+    font-size: 13px;
+    color: var(--bark-light);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  /* ── FORM ELEMENTS ── */
+  .field { margin-bottom: 20px; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--bark-mid);
+    margin-bottom: 7px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    font-size: 11px;
+  }
+  .field input, .field select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--sand);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--bark);
+    background: var(--cream);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .field input:focus, .field select:focus {
+    outline: none;
+    border-color: var(--sage);
+    box-shadow: 0 0 0 3px rgba(74,124,89,0.12);
+  }
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '▾';
+    position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--bark-light);
+    pointer-events: none;
+    font-size: 14px;
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
+
+  /* ── CHECKBOX GROUP ── */
+  .check-group {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 4px;
+  }
+  .check-item {
+    display: flex; align-items: center; gap: 7px;
+    padding: 8px 14px;
+    border: 1.5px solid var(--sand);
+    border-radius: 100px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--bark-mid);
+    transition: all 0.15s ease;
+    user-select: none;
+    background: var(--cream);
+  }
+  .check-item input { display: none; }
+  .check-item:hover { border-color: var(--sage-light); color: var(--sage); }
+  .check-item.checked {
+    background: var(--sage-pale);
+    border-color: var(--sage);
+    color: var(--sage);
+    font-weight: 600;
+  }
+
+  /* ── PHOTO UPLOAD SECTION ── */
+  .photo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 480px) { .photo-grid { grid-template-columns: 1fr; } }
+
+  .photo-slot {
+    border: 2px dashed var(--sand);
+    border-radius: var(--radius);
+    padding: 20px 16px;
+    text-align: center;
+    transition: all 0.2s ease;
+    background: var(--cream);
+    position: relative;
+    min-height: 180px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .photo-slot.required { border-color: var(--bark-light); }
+  .photo-slot.uploaded {
+    border-style: solid;
+    border-color: var(--sage);
+    background: var(--sage-pale);
+  }
+  .photo-slot-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--bark-light);
+    margin-bottom: 8px;
+  }
+  .photo-slot-required-badge {
+    display: inline-block;
+    background: var(--bark);
+    color: white;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 100px;
+    margin-bottom: 8px;
+  }
+  .photo-slot-optional-badge {
+    display: inline-block;
+    background: var(--sand);
+    color: var(--bark-light);
+    font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 100px;
+    margin-bottom: 8px;
+  }
+  .photo-icon { font-size: 28px; margin-bottom: 8px; }
+  .photo-desc { font-size: 12px; color: var(--bark-light); line-height: 1.4; }
+  .photo-tip {
+    font-size: 11px; color: var(--sage);
+    font-style: italic; margin-top: 6px;
+  }
+  .upload-btn {
+    margin-top: 12px;
+    padding: 8px 18px;
+    background: var(--bark);
+    color: white;
+    border: none; border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .upload-btn:hover { background: var(--bark-mid); transform: translateY(-1px); }
+  .photo-preview {
+    width: 100%; border-radius: var(--radius-sm);
+    max-height: 120px; object-fit: cover;
+    margin-top: 8px; display: none;
+  }
+  .photo-check {
+    position: absolute; top: 10px; right: 10px;
+    width: 24px; height: 24px;
+    background: var(--sage); color: white;
+    border-radius: 50%;
+    display: none; align-items: center; justify-content: center;
+    font-size: 13px;
+  }
+  .photo-slot.uploaded .photo-check { display: flex; }
+
+  .optional-hint {
+    background: var(--amber-pale);
+    border: 1px solid rgba(212,131,26,0.2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 13px; color: var(--bark-mid);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .optional-hint strong { color: var(--amber); }
+
+  /* ── PHOTO GUIDE ── */
+  .photo-guide {
+    background: var(--sage-pale);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+  .photo-guide h4 {
+    font-size: 13px; font-weight: 700; color: var(--sage);
+    margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .photo-guide ol {
+    padding-left: 18px;
+    font-size: 13px; color: var(--bark-mid);
+    line-height: 1.8;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: block; width: 100%;
+    padding: 16px 24px;
+    background: var(--bark);
+    color: white;
+    border: none; border-radius: var(--radius);
+    font-family: var(--font-display);
+    font-size: 17px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.2px;
+    text-align: center;
+  }
+  .btn:hover { background: var(--bark-mid); transform: translateY(-2px); box-shadow: 0 6px 20px var(--shadow-md); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-outline {
+    background: transparent;
+    color: var(--bark);
+    border: 2px solid var(--sand);
+    margin-top: 10px;
+  }
+  .btn-outline:hover { background: var(--sand); border-color: var(--sand); }
+  .btn-sage { background: var(--sage); }
+  .btn-sage:hover { background: var(--sage-light); }
+
+  /* ── LOADING ── */
+  .loading-screen {
+    display: none;
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .loading-screen.active { display: block; }
+  .paw-spinner {
+    font-size: 48px;
+    animation: pawSpin 1.5s ease-in-out infinite;
+    display: block; margin-bottom: 24px;
+  }
+  @keyframes pawSpin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+  .loading-screen h2 {
+    font-family: var(--font-display);
+    font-size: 24px; color: var(--bark);
+    margin-bottom: 8px;
+  }
+  .loading-screen p { color: var(--bark-light); font-size: 14px; }
+  .loading-steps {
+    margin-top: 24px;
+    display: flex; flex-direction: column; gap: 8px;
+    max-width: 280px; margin-left: auto; margin-right: auto;
+  }
+  .loading-step {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--bark-light);
+    padding: 8px 16px;
+    border-radius: 100px;
+    background: var(--sand);
+    opacity: 0.4;
+    transition: all 0.4s ease;
+  }
+  .loading-step.active { opacity: 1; background: var(--sage-pale); color: var(--sage); }
+  .loading-step.done { opacity: 1; background: var(--sage-pale); color: var(--sage); }
+
+  /* ── RESULTS ── */
+  .results-screen { display: none; }
+  .results-screen.active { display: block; }
+
+  .risk-banner {
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .risk-banner::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    opacity: 0.06;
+    background: repeating-linear-gradient(45deg, currentColor 0, currentColor 1px, transparent 1px, transparent 12px);
+  }
+  .risk-banner.GREEN { background: var(--sage-pale); border: 2px solid var(--sage); }
+  .risk-banner.YELLOW { background: #FFF9E6; border: 2px solid #E6B800; }
+  .risk-banner.ORANGE { background: var(--amber-pale); border: 2px solid var(--amber); }
+  .risk-banner.RED { background: var(--rose-pale); border: 2px solid var(--rose); }
+
+  .risk-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; margin-bottom: 6px;
+    opacity: 0.7;
+  }
+  .risk-title {
+    font-family: var(--font-display);
+    font-size: 32px; font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .risk-banner.GREEN .risk-title { color: var(--sage); }
+  .risk-banner.YELLOW .risk-title { color: #B8960A; }
+  .risk-banner.ORANGE .risk-title { color: var(--amber); }
+  .risk-banner.RED .risk-title { color: var(--rose); }
+  .risk-summary { font-size: 15px; color: var(--bark-mid); line-height: 1.6; }
+
+  /* Score grid */
+  .score-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin-bottom: 20px;
+  }
+  .score-card {
+    background: var(--warm-white);
+    border-radius: var(--radius);
+    padding: 20px 16px;
+    text-align: center;
+    border: 1.5px solid var(--sand);
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .score-card-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--bark-light);
+    margin-bottom: 8px;
+  }
+  .score-value {
+    font-family: var(--font-display);
+    font-size: 36px; font-weight: 700; line-height: 1;
+    margin-bottom: 4px;
+  }
+  .score-0 { color: var(--sage); }
+  .score-1 { color: #B8960A; }
+  .score-2 { color: var(--amber); }
+  .score-3 { color: var(--rose); }
+  .score-sublabel { font-size: 11px; color: var(--bark-light); }
+
+  /* Findings */
+  .findings-list {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 8px;
+    margin-bottom: 20px;
+  }
+  .finding-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 16px;
+    background: var(--cream);
+    border-radius: var(--radius-sm);
+    font-size: 14px; color: var(--bark-mid);
+    border-left: 3px solid var(--sand);
+  }
+  .finding-item .fi-icon { flex-shrink: 0; margin-top: 1px; }
+
+  /* Nutrition section */
+  .nutrition-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 6px;
+  }
+  .section-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--sage-pale);
+    color: var(--sage);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 4px 12px; border-radius: 100px;
+    margin-bottom: 16px;
+  }
+
+  .primary-rec {
+    background: var(--bark);
+    color: white;
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .primary-rec-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; opacity: 0.6; margin-bottom: 6px;
+  }
+  .primary-rec-text { font-size: 16px; line-height: 1.5; font-weight: 500; }
+
+  .rec-list {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .rec-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 14px 16px;
+    background: var(--warm-white);
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--sand);
+    font-size: 14px;
+  }
+  .rec-item-priority {
+    flex-shrink: 0;
+    width: 6px; height: 6px;
+    border-radius: 50%; margin-top: 6px;
+  }
+  .priority-high { background: var(--rose); }
+  .priority-medium { background: var(--amber); }
+  .priority-low { background: var(--sage); }
+
+  .tags-row {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 8px;
+  }
+  .tag {
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 12px; font-weight: 500;
+  }
+  .tag-seek { background: var(--sage-pale); color: var(--sage); border: 1px solid var(--sage); }
+  .tag-avoid { background: var(--rose-pale); color: var(--rose); border: 1px solid var(--rose); }
+
+  .positive-note {
+    background: var(--sage-pale);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    font-size: 14px; color: var(--sage);
+    border-left: 3px solid var(--sage);
+    margin-top: 16px;
+    font-style: italic;
+  }
+
+  .recheck-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--amber-pale);
+    border: 1px solid rgba(212,131,26,0.3);
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-size: 13px; font-weight: 600; color: var(--amber);
+    margin-top: 8px;
+  }
+
+  .disclaimer {
+    background: var(--sand);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-size: 12px; color: var(--bark-light);
+    line-height: 1.5;
+    margin-top: 20px;
+    border: 1px solid rgba(232,221,208,0.8);
+  }
+
+  /* ── SECTION VISIBILITY ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    height: 3px;
+    background: var(--sand);
+    border-radius: 2px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--sage);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* ── MISC ── */
+  .divider { height: 1px; background: var(--sand); margin: 24px 0; }
+  .text-sage { color: var(--sage); }
+  .text-small { font-size: 12px; color: var(--bark-light); margin-top: 6px; }
+  .mt-16 { margin-top: 16px; }
+  .error-msg {
+    background: var(--rose-pale);
+    border: 1px solid rgba(192,57,43,0.3);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 13px; color: var(--rose);
+    display: none; margin-top: 12px;
+  }
+  .error-msg.show { display: block; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo-mark">🐾</div>
+    <h1>DentalPaw</h1>
+    <p>AI-powered canine dental screening & nutrition guidance</p>
+  </header>
+
+  <!-- STEP INDICATORS -->
+  <div class="steps" id="stepIndicator">
+    <div class="step-dot active" id="dot1">1</div>
+    <div class="step-line" id="line1"></div>
+    <div class="step-dot" id="dot2">2</div>
+    <div class="step-line" id="line2"></div>
+    <div class="step-dot" id="dot3">3</div>
+    <div class="step-line" id="line3"></div>
+    <div class="step-dot" id="dot4">4</div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width:25%"></div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- SCREEN 1: DOG PROFILE                           -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="screen active" id="screen1">
+    <div class="card">
+      <div class="card-title">Tell us about your dog</div>
+      <div class="card-subtitle">This helps us calibrate the analysis to your dog's specific risk profile.</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Dog's Name (optional)</label>
+          <input type="text" id="dogName" placeholder="e.g. Bella">
+        </div>
+        <div class="field">
+          <label>Breed *</label>
+          <input type="text" id="dogBreed" placeholder="e.g. Labrador Retriever">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Age (years) *</label>
+          <input type="number" id="dogAge" placeholder="e.g. 4" min="0" max="25" step="0.5">
+        </div>
+        <div class="field">
+          <label>Weight (lbs, optional)</label>
+          <input type="number" id="dogWeight" placeholder="e.g. 45">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Sex &amp; Neuter Status *</label>
+        <div class="select-wrap">
+          <select id="dogSex">
+            <option value="">Select...</option>
+            <option value="Male (intact)">Male — Intact</option>
+            <option value="Male (neutered)">Male — Neutered</option>
+            <option value="Female (intact)">Female — Intact</option>
+            <option value="Female (spayed)">Female — Spayed</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-sage mt-16" onclick="goToScreen(2)">
+        Continue — Diet & Care →
+      </button>
+      <div class="error-msg" id="err1">Please fill in Breed, Age, and Sex before continuing.</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- SCREEN 2: DIET & CARE                           -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="screen" id="screen2">
+    <div class="card">
+      <div class="card-title">Diet &amp; Dental Care</div>
+      <div class="card-subtitle">The more context you give us, the more targeted your recommendations will be.</div>
+
+      <div class="field">
+        <label>Current Main Food *</label>
+        <input type="text" id="currentFood" placeholder="e.g. Royal Canin Medium Adult, or Blue Buffalo Chicken">
+      </div>
+
+      <div class="field">
+        <label>Diet Type *</label>
+        <div class="select-wrap">
+          <select id="dietType">
+            <option value="">Select...</option>
+            <option value="dry kibble">Dry Kibble</option>
+            <option value="wet/canned food">Wet / Canned Food</option>
+            <option value="raw diet">Raw Diet</option>
+            <option value="mixed kibble and wet">Mixed — Kibble &amp; Wet</option>
+            <option value="prescription diet">Prescription Diet</option>
+            <option value="home cooked">Home Cooked</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Treats (select all that apply)</label>
+        <div class="check-group" id="treatsGroup">
+          <label class="check-item"><input type="checkbox" value="soft treats"> 🍖 Soft Treats</label>
+          <label class="check-item"><input type="checkbox" value="dental chews (VOHC)"> 🦷 Dental Chews (VOHC)</label>
+          <label class="check-item"><input type="checkbox" value="bully sticks"> 🥩 Bully Sticks</label>
+          <label class="check-item"><input type="checkbox" value="rawhide"> Rawhide</label>
+          <label class="check-item"><input type="checkbox" value="hard bones or antlers"> 🦴 Hard Bones/Antlers</label>
+          <label class="check-item"><input type="checkbox" value="table scraps"> 🍽 Table Scraps</label>
+          <label class="check-item"><input type="checkbox" value="kibble as treats"> Kibble as Treats</label>
+          <label class="check-item"><input type="checkbox" value="no regular treats"> None</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Home Dental Care (select all that apply)</label>
+        <div class="check-group" id="homeCareGroup">
+          <label class="check-item"><input type="checkbox" value="daily brushing"> 🪥 Daily Brushing</label>
+          <label class="check-item"><input type="checkbox" value="occasional brushing"> Occasional Brushing</label>
+          <label class="check-item"><input type="checkbox" value="water additives"> 💧 Water Additives</label>
+          <label class="check-item"><input type="checkbox" value="dental wipes"> Dental Wipes</label>
+          <label class="check-item"><input type="checkbox" value="enzymatic toothpaste"> Enzymatic Toothpaste</label>
+          <label class="check-item"><input type="checkbox" value="none"> Nothing Currently</label>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Body Condition</label>
+          <div class="select-wrap">
+            <select id="bodyCondition">
+              <option value="">Select...</option>
+              <option value="lean/underweight">Lean / Underweight</option>
+              <option value="ideal weight">Ideal Weight</option>
+              <option value="slightly overweight">Slightly Overweight</option>
+              <option value="significantly overweight">Significantly Overweight</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Last Professional Cleaning</label>
+          <div class="select-wrap">
+            <select id="lastCleaning">
+              <option value="">Select...</option>
+              <option value="never">Never / Unknown</option>
+              <option value="within past year">Within Past Year</option>
+              <option value="1-2 years ago">1–2 Years Ago</option>
+              <option value="more than 2 years ago">More Than 2 Years Ago</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Any Symptoms Noticed? (select all that apply)</label>
+        <div class="check-group" id="symptomsGroup">
+          <label class="check-item"><input type="checkbox" value="bad breath"> 💨 Bad Breath</label>
+          <label class="check-item"><input type="checkbox" value="pawing at mouth"> Pawing at Mouth</label>
+          <label class="check-item"><input type="checkbox" value="dropping food"> Dropping Food</label>
+          <label class="check-item"><input type="checkbox" value="reluctant to chew hard food"> Won't Chew Hard Food</label>
+          <label class="check-item"><input type="checkbox" value="visible swelling on face"> Face Swelling</label>
+          <label class="check-item"><input type="checkbox" value="bleeding noticed"> Bleeding</label>
+          <label class="check-item"><input type="checkbox" value="no symptoms noticed"> No Symptoms</label>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+        <button class="btn btn-outline" style="flex:0 0 auto;width:auto;padding:12px 20px;" onclick="goToScreen(1)">← Back</button>
+        <button class="btn btn-sage" style="flex:1;" onclick="goToScreen(3)">Continue — Upload Photos →</button>
+      </div>
+      <div class="error-msg" id="err2">Please select your dog's current food and diet type.</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- SCREEN 3: PHOTO UPLOAD                          -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="screen" id="screen3">
+    <div class="card">
+      <div class="card-title">Upload Dental Photos</div>
+      <div class="card-subtitle">Two photos of the side of your dog's mouth — these are the most diagnostically important views.</div>
+
+      <div class="photo-guide">
+        <h4>📸 How to get a good photo</h4>
+        <ol>
+          <li>Position your dog in good lighting (outdoors or near a window)</li>
+          <li>Gently pull the cheek/lip back with one finger to expose the back teeth</li>
+          <li>Aim for the large pointed tooth at the back — that's the key tooth</li>
+          <li>Make sure the pink gumline above the teeth is visible</li>
+          <li>Hold your phone horizontal and use flash if needed</li>
+        </ol>
+      </div>
+
+      <!-- Core 2 photos -->
+      <div class="photo-grid">
+        <!-- Right Side -->
+        <div class="photo-slot required" id="slot-right">
+          <div class="photo-check">✓</div>
+          <div class="photo-slot-required-badge">Required</div>
+          <div class="photo-slot-label">Right Side</div>
+          <div class="photo-icon">🦷</div>
+          <div class="photo-desc">Right cheek pulled back, upper back teeth visible</div>
+          <div class="photo-tip">Focus on the large tooth near the back</div>
+          <button class="upload-btn" onclick="triggerUpload('right')">Choose Photo</button>
+          <img class="photo-preview" id="preview-right" src="" alt="Right side preview">
+        </div>
+
+        <!-- Left Side -->
+        <div class="photo-slot required" id="slot-left">
+          <div class="photo-check">✓</div>
+          <div class="photo-slot-required-badge">Required</div>
+          <div class="photo-slot-label">Left Side</div>
+          <div class="photo-icon">🦷</div>
+          <div class="photo-desc">Left cheek pulled back, upper back teeth visible</div>
+          <div class="photo-tip">Same angle as the right side photo</div>
+          <button class="upload-btn" onclick="triggerUpload('left')">Choose Photo</button>
+          <img class="photo-preview" id="preview-left" src="" alt="Left side preview">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Optional photos -->
+      <div class="optional-hint">
+        <strong>Want a more complete analysis?</strong> Two optional photos can help us check your dog's front teeth and lower jaw. These are extras — your scan is complete with just the 2 photos above.
+      </div>
+
+      <div class="photo-grid">
+        <!-- Front -->
+        <div class="photo-slot" id="slot-front">
+          <div class="photo-check">✓</div>
+          <div class="photo-slot-optional-badge">Optional</div>
+          <div class="photo-slot-label">Front Teeth</div>
+          <div class="photo-icon">😬</div>
+          <div class="photo-desc">Lips pulled back showing front incisors and canine teeth</div>
+          <button class="upload-btn" onclick="triggerUpload('front')">Add Photo</button>
+          <img class="photo-preview" id="preview-front" src="" alt="Front preview">
+        </div>
+
+        <!-- Lower -->
+        <div class="photo-slot" id="slot-lower">
+          <div class="photo-check">✓</div>
+          <div class="photo-slot-optional-badge">Optional</div>
+          <div class="photo-slot-label">Lower Jaw</div>
+          <div class="photo-icon">⬇️</div>
+          <div class="photo-desc">Either side showing lower teeth (useful for small breeds)</div>
+          <button class="upload-btn" onclick="triggerUpload('lower')">Add Photo</button>
+          <img class="photo-preview" id="preview-lower" src="" alt="Lower preview">
+        </div>
+      </div>
+
+      <!-- Hidden file inputs -->
+      <input type="file" id="fileInput-right" accept="image/*" capture="environment" style="display:none" onchange="handleFileSelect(event,'right')">
+      <input type="file" id="fileInput-left" accept="image/*" capture="environment" style="display:none" onchange="handleFileSelect(event,'left')">
+      <input type="file" id="fileInput-front" accept="image/*" capture="environment" style="display:none" onchange="handleFileSelect(event,'front')">
+      <input type="file" id="fileInput-lower" accept="image/*" capture="environment" style="display:none" onchange="handleFileSelect(event,'lower')">
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+        <button class="btn btn-outline" style="flex:0 0 auto;width:auto;padding:12px 20px;" onclick="goToScreen(2)">← Back</button>
+        <button class="btn" id="analyzeBtn" style="flex:1;background:var(--bark);" onclick="runAnalysis()">
+          🔍 Analyse My Dog's Teeth
+        </button>
+      </div>
+      <div class="error-msg" id="err3">Please upload at least the two required photos (right and left side) before analysing.</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- LOADING SCREEN                                  -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="loading-screen" id="loadingScreen">
+    <span class="paw-spinner">🐾</span>
+    <h2>Analysing <span id="loadingDogName">your dog</span>'s teeth…</h2>
+    <p>Our AI is examining each photo carefully</p>
+    <div class="loading-steps">
+      <div class="loading-step" id="lstep1">🖼 Examining dental photos</div>
+      <div class="loading-step" id="lstep2">📊 Scoring tartar &amp; gum health</div>
+      <div class="loading-step" id="lstep3">🥗 Building nutrition recommendations</div>
+      <div class="loading-step" id="lstep4">📋 Preparing your report</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- SCREEN 4: RESULTS                               -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="screen" id="screen4">
+
+    <!-- Risk Banner -->
+    <div class="risk-banner" id="riskBanner">
+      <div class="risk-label" id="riskLabel">Screening Result</div>
+      <div class="risk-title" id="riskTitle">—</div>
+      <div class="risk-summary" id="riskSummary">—</div>
+    </div>
+
+    <!-- Score Cards -->
+    <div class="score-grid">
+      <div class="score-card">
+        <div class="score-card-label">Tartar</div>
+        <div class="score-value" id="tartarScore">—</div>
+        <div class="score-sublabel" id="tartarLabel">—</div>
+      </div>
+      <div class="score-card">
+        <div class="score-card-label">Gums</div>
+        <div class="score-value" id="gumScore">—</div>
+        <div class="score-sublabel" id="gumLabel">—</div>
+      </div>
+      <div class="score-card">
+        <div class="score-card-label">Structure</div>
+        <div class="score-value" id="structuralScore">—</div>
+        <div class="score-sublabel" id="structuralLabel">—</div>
+      </div>
+    </div>
+
+    <!-- Key Findings -->
+    <div class="card">
+      <div class="section-tag">🔍 Key Findings</div>
+      <ul class="findings-list" id="findingsList"></ul>
+    </div>
+
+    <!-- Nutrition Section -->
+    <div class="card">
+      <div class="section-tag">🥗 Nutrition &amp; Oral Health Recommendations</div>
+
+      <div class="primary-rec">
+        <div class="primary-rec-label">Most Important Action</div>
+        <div class="primary-rec-text" id="primaryRec">—</div>
+      </div>
+
+      <div id="dietAssessment" style="font-size:14px;color:var(--bark-mid);margin-bottom:16px;line-height:1.6;"></div>
+
+      <div class="rec-list" id="recList"></div>
+
+      <div id="ingredientSection" style="display:none">
+        <div style="font-size:12px;font-weight:700;color:var(--bark-light);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Look for these ingredients</div>
+        <div class="tags-row" id="seekTags"></div>
+        <div style="font-size:12px;font-weight:700;color:var(--bark-light);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px;">Consider reducing</div>
+        <div class="tags-row" id="avoidTags"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div style="font-size:13px;font-weight:700;color:var(--bark-mid);margin-bottom:10px;">Home Care Tips</div>
+      <ul class="findings-list" id="homeCareTips"></ul>
+
+      <div class="positive-note" id="positiveNote"></div>
+
+      <div style="margin-top:16px;">
+        <div class="recheck-badge" id="recheckBadge">📅 Recheck recommended in — days</div>
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <strong>Important:</strong> DentalPaw is a wellness screening tool, not a veterinary diagnostic service. Results are based on visible surfaces only — subgingival disease, periodontal pockets, and root health cannot be assessed from photographs. Any non-green result should be discussed with your veterinarian. This tool does not replace professional veterinary care.
+    </div>
+
+    <button class="btn btn-outline" onclick="startOver()" style="margin-top:16px;">
+      🔄 Screen Another Dog
+    </button>
+
+  </div><!-- /screen4 -->
+
+</div><!-- /app -->
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────────
+const state = {
+  imageBase64: { right: null, left: null, front: null, lower: null },
+  imageMediaType: { right: null, left: null, front: null, lower: null },
+};
+
+// ── FILE HANDLING ─────────────────────────────────────────────────────────────
+// Images are converted to base64 locally and sent directly to the API
+// Uploadcare is used for storage/preview only - base64 goes to Claude
+
+function triggerUpload(side) {
+  document.getElementById(`fileInput-${side}`).click();
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // Strip the data:image/jpeg;base64, prefix - just the raw base64
+      const base64 = e.target.result.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function resizeImageIfNeeded(file) {
+  return new Promise((resolve) => {
+    const MAX_DIMENSION = 1568; // Anthropic recommended max
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const { width, height } = img;
+      if (width <= MAX_DIMENSION && height <= MAX_DIMENSION) {
+        URL.revokeObjectURL(url);
+        resolve(file); // No resize needed
+        return;
+      }
+      // Resize on canvas
+      const scale = MAX_DIMENSION / Math.max(width, height);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(width * scale);
+      canvas.height = Math.round(height * scale);
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.92);
+    };
+    img.src = url;
+  });
+}
+
+async function handleFileSelect(event, side) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const slot = document.getElementById(`slot-${side}`);
+  const preview = document.getElementById(`preview-${side}`);
+
+  // Show local preview immediately
+  const localUrl = URL.createObjectURL(file);
+  preview.src = localUrl;
+  preview.style.display = 'block';
+
+  slot.querySelector('.upload-btn').textContent = 'Processing…';
+  slot.querySelector('.upload-btn').disabled = true;
+
+  try {
+    // Resize if needed, then convert to base64
+    const resized = await resizeImageIfNeeded(file);
+    const base64 = await fileToBase64(resized);
+    const mediaType = 'image/jpeg';
+
+    // Store base64 and media type for API call
+    state.imageBase64[side] = base64;
+    state.imageMediaType[side] = mediaType;
+
+    slot.classList.add('uploaded');
+    slot.querySelector('.upload-btn').textContent = '✓ Change Photo';
+    slot.querySelector('.upload-btn').disabled = false;
+  } catch (err) {
+    console.error('Processing error:', err);
+    slot.querySelector('.upload-btn').textContent = '⚠ Retry';
+    slot.querySelector('.upload-btn').disabled = false;
+  }
+}
+
+// ── NAVIGATION ─────────────────────────────────────────────────────────────────
+function goToScreen(n) {
+  // Validate before advancing
+  if (n === 2) {
+    const breed = document.getElementById('dogBreed').value.trim();
+    const age = document.getElementById('dogAge').value.trim();
+    const sex = document.getElementById('dogSex').value;
+    const errEl = document.getElementById('err1');
+    if (!breed) { errEl.textContent = 'Please enter your dog\'s breed.'; errEl.classList.add('show'); return; }
+    if (!age || isNaN(parseFloat(age))) { errEl.textContent = 'Please enter your dog\'s age.'; errEl.classList.add('show'); return; }
+    if (!sex) { errEl.textContent = 'Please select your dog\'s sex and neuter status.'; errEl.classList.add('show'); return; }
+    errEl.classList.remove('show');
+  }
+
+  if (n === 3) {
+    const food = document.getElementById('currentFood').value.trim();
+    const diet = document.getElementById('dietType').value;
+    const errEl = document.getElementById('err2');
+    if (!food) { errEl.textContent = 'Please enter your dog\'s current food.'; errEl.classList.add('show'); return; }
+    if (!diet) { errEl.textContent = 'Please select a diet type.'; errEl.classList.add('show'); return; }
+    errEl.classList.remove('show');
+  }
+
+  // Hide all screens
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`screen${n}`).classList.add('active');
+
+  // Update step indicators
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.getElementById(`dot${i}`);
+    dot.classList.remove('active','complete');
+    if (i < n) dot.classList.add('complete');
+    else if (i === n) dot.classList.add('active');
+  }
+  for (let i = 1; i <= 3; i++) {
+    const line = document.getElementById(`line${i}`);
+    line.classList.toggle('complete', i < n);
+  }
+
+  // Update progress bar
+  document.getElementById('progressFill').style.width = `${(n/4)*100}%`;
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── CHECKBOX HANDLING ──────────────────────────────────────────────────────────
+document.querySelectorAll('.check-group').forEach(group => {
+  group.addEventListener('change', e => {
+    const item = e.target.closest('.check-item');
+    if (item) item.classList.toggle('checked', e.target.checked);
+  });
+});
+
+function getCheckedValues(groupId) {
+  return [...document.querySelectorAll(`#${groupId} input:checked`)].map(i => i.value);
+}
+
+// ── COLLECT DOG PROFILE ────────────────────────────────────────────────────────
+function collectProfile() {
+  return {
+    name: document.getElementById('dogName').value.trim() || 'Your dog',
+    breed: document.getElementById('dogBreed').value.trim(),
+    age: parseFloat(document.getElementById('dogAge').value),
+    weight: document.getElementById('dogWeight').value || null,
+    sex: document.getElementById('dogSex').value,
+    currentFood: document.getElementById('currentFood').value.trim(),
+    dietType: document.getElementById('dietType').value,
+    treats: getCheckedValues('treatsGroup').join(', ') || 'None specified',
+    homeCare: getCheckedValues('homeCareGroup').join(', ') || 'None',
+    bodyCondition: document.getElementById('bodyCondition').value || 'Not reported',
+    lastCleaning: document.getElementById('lastCleaning').value || 'Unknown',
+    symptoms: getCheckedValues('symptomsGroup'),
+  };
+}
+
+// ── LOADING ANIMATION ──────────────────────────────────────────────────────────
+function animateLoadingSteps() {
+  const steps = ['lstep1','lstep2','lstep3','lstep4'];
+  steps.forEach((id, i) => {
+    setTimeout(() => {
+      steps.forEach(s => document.getElementById(s).classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }, i * 2200);
+  });
+}
+
+// ── RUN ANALYSIS ───────────────────────────────────────────────────────────────
+async function runAnalysis() {
+  if (!state.imageBase64.right || !state.imageBase64.left) {
+    document.getElementById('err3').classList.add('show');
+    return;
+  }
+  document.getElementById('err3').classList.remove('show');
+
+  const profile = collectProfile();
+
+  // Show loading
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('loadingScreen').classList.add('active');
+  document.getElementById('loadingDogName').textContent = profile.name;
+  animateLoadingSteps();
+
+  // Update step UI
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.getElementById(`dot${i}`);
+    dot.classList.remove('active','complete');
+    if (i < 4) dot.classList.add('complete');
+    else dot.classList.add('active');
+  }
+  document.getElementById('progressFill').style.width = '90%';
+
+  try {
+    const response = await fetch('/.netlify/functions/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        dogProfile: profile,
+        images: {
+          right:        { base64: state.imageBase64.right,  mediaType: state.imageMediaType.right  },
+          left:         { base64: state.imageBase64.left,   mediaType: state.imageMediaType.left   },
+          optionalFront:{ base64: state.imageBase64.front,  mediaType: state.imageMediaType.front  },
+          optionalLower:{ base64: state.imageBase64.lower,  mediaType: state.imageMediaType.lower  },
+        },
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!result.success) throw new Error(result.error || 'Analysis failed');
+
+    renderResults(result, profile);
+
+  } catch (err) {
+    console.error('Analysis error:', err);
+    document.getElementById('loadingScreen').classList.remove('active');
+    document.getElementById('screen3').classList.add('active');
+    document.getElementById('err3').textContent = 'Analysis failed: ' + err.message + '. Please try again.';
+    document.getElementById('err3').classList.add('show');
+  }
+}
+
+// ── SCORE LABELS ───────────────────────────────────────────────────────────────
+const TARTAR_LABELS = ['None','Mild','Moderate','Severe'];
+const GUM_LABELS    = ['Healthy','Mild Gingivitis','Moderate Gingivitis','Severe'];
+const STRUCT_LABELS = ['Intact','Minor Wear','Moderate','Severe'];
+const RISK_TITLES   = { GREEN:'Looking Good!', YELLOW:'Worth Monitoring', ORANGE:'Needs Attention', RED:'See Your Vet Soon' };
+const RISK_LABELS   = { GREEN:'Healthy — Keep it up', YELLOW:'Mild Concern', ORANGE:'Moderate Concern', RED:'Urgent Concern' };
+
+// ── RENDER RESULTS ─────────────────────────────────────────────────────────────
+function renderResults(result, profile) {
+  const { dental, nutrition } = result;
+
+  // Risk banner
+  const risk = dental.overall_risk || 'GREEN';
+  const banner = document.getElementById('riskBanner');
+  banner.className = `risk-banner ${risk}`;
+  document.getElementById('riskLabel').textContent = RISK_LABELS[risk];
+  document.getElementById('riskTitle').textContent = RISK_TITLES[risk];
+  document.getElementById('riskSummary').textContent = dental.owner_summary || '';
+
+  // Scores
+  const tc = dental.tartar?.composite ?? 0;
+  const gc = dental.gingival?.composite ?? 0;
+  const sc = dental.structural?.score ?? 0;
+
+  setScore('tartarScore', 'tartarLabel', tc, TARTAR_LABELS);
+  setScore('gumScore', 'gumLabel', gc, GUM_LABELS);
+  setScore('structuralScore', 'structuralLabel', sc, STRUCT_LABELS);
+
+  // Findings
+  const findingsList = document.getElementById('findingsList');
+  findingsList.innerHTML = '';
+  const findings = dental.key_findings || [];
+  if (findings.length === 0) {
+    findingsList.innerHTML = '<li class="finding-item"><span class="fi-icon">✅</span> No significant issues detected in the photos provided.</li>';
+  } else {
+    findings.forEach(f => {
+      const li = document.createElement('li');
+      li.className = 'finding-item';
+      li.innerHTML = `<span class="fi-icon">•</span> ${escHtml(f)}`;
+      findingsList.appendChild(li);
+    });
+  }
+
+  // Nutrition
+  document.getElementById('primaryRec').textContent = nutrition.primary_recommendation || '—';
+  document.getElementById('dietAssessment').textContent = nutrition.diet_assessment || '';
+
+  const recList = document.getElementById('recList');
+  recList.innerHTML = '';
+  (nutrition.food_recommendations || []).forEach(rec => {
+    const div = document.createElement('div');
+    div.className = 'rec-item';
+    div.innerHTML = `
+      <div class="rec-item-priority priority-${rec.priority || 'medium'}"></div>
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--bark-light);letter-spacing:0.5px;margin-bottom:3px;">${escHtml(rec.category || '')}${rec.vohc_approved ? ' · <span style="color:var(--sage)">VOHC ✓</span>' : ''}</div>
+        ${escHtml(rec.recommendation || '')}
+      </div>`;
+    recList.appendChild(div);
+  });
+
+  // Seek/Avoid tags
+  const seek = nutrition.ingredients_to_seek || [];
+  const avoid = nutrition.ingredients_to_avoid || [];
+  if (seek.length > 0 || avoid.length > 0) {
+    document.getElementById('ingredientSection').style.display = 'block';
+    document.getElementById('seekTags').innerHTML = seek.map(s => `<span class="tag tag-seek">+ ${escHtml(s)}</span>`).join('');
+    document.getElementById('avoidTags').innerHTML = avoid.map(s => `<span class="tag tag-avoid">− ${escHtml(s)}</span>`).join('');
+  }
+
+  // Home care tips
+  const homeCareTips = document.getElementById('homeCareTips');
+  homeCareTips.innerHTML = '';
+  (nutrition.home_care_tips || []).forEach(tip => {
+    const li = document.createElement('li');
+    li.className = 'finding-item';
+    li.innerHTML = `<span class="fi-icon">→</span> ${escHtml(tip)}`;
+    homeCareTips.appendChild(li);
+  });
+
+  // Positive note
+  document.getElementById('positiveNote').textContent = nutrition.positive_note || '';
+
+  // Recheck
+  const days = nutrition.recheck_days || 90;
+  document.getElementById('recheckBadge').textContent = `📅 Recheck recommended in ${days} days`;
+
+  // Show results
+  document.getElementById('loadingScreen').classList.remove('active');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen4').classList.add('active');
+  document.getElementById('progressFill').style.width = '100%';
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.getElementById(`dot${i}`);
+    dot.classList.remove('active');
+    dot.classList.add('complete');
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setScore(valueId, labelId, score, labels) {
+  const el = document.getElementById(valueId);
+  el.textContent = score;
+  el.className = `score-value score-${score}`;
+  document.getElementById(labelId).textContent = labels[score] || '—';
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function startOver() {
+  state.imageBase64   = { right: null, left: null, front: null, lower: null };
+  state.imageMediaType = { right: null, left: null, front: null, lower: null };
+  ['right','left','front','lower'].forEach(side => {
+    const slot = document.getElementById(`slot-${side}`);
+    slot.classList.remove('uploaded');
+    const btn = slot.querySelector('.upload-btn');
+    btn.textContent = side === 'front' || side === 'lower' ? 'Add Photo' : 'Choose Photo';
+    btn.disabled = false;
+    const preview = document.getElementById(`preview-${side}`);
+    preview.src = ''; preview.style.display = 'none';
+    document.getElementById(`fileInput-${side}`).value = '';
+  });
+  document.getElementById('screen4').classList.remove('active');
+  goToScreen(1);
+}
+</script>
+
+</body>
+</html>
