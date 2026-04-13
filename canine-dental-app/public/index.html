@@ -998,26 +998,27 @@ function fileToBase64(file) {
 
 function resizeImageIfNeeded(file) {
   return new Promise((resolve) => {
-    const MAX_DIMENSION = 1568; // Anthropic recommended max
+    // Keep well under Netlify's 6MB body limit and Anthropic's size limits
+    // Target: max 800px on longest side, 0.75 quality = typically 80-150KB
+    const MAX_DIMENSION = 800;
+    const QUALITY = 0.75;
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
       const { width, height } = img;
-      if (width <= MAX_DIMENSION && height <= MAX_DIMENSION) {
-        URL.revokeObjectURL(url);
-        resolve(file); // No resize needed
-        return;
-      }
-      // Resize on canvas
-      const scale = MAX_DIMENSION / Math.max(width, height);
+      const scale = Math.min(1, MAX_DIMENSION / Math.max(width, height));
       const canvas = document.createElement('canvas');
       canvas.width = Math.round(width * scale);
       canvas.height = Math.round(height * scale);
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(url);
-      canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.92);
+      canvas.toBlob((blob) => {
+        console.log(`Image resized: ${canvas.width}x${canvas.height}, ~${Math.round(blob.size/1024)}KB`);
+        resolve(blob);
+      }, 'image/jpeg', QUALITY);
     };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
     img.src = url;
   });
 }
