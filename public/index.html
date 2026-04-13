@@ -832,6 +832,38 @@
   }
   .recheck-text { font-size: 13px; color: var(--bark-mid); }
 
+
+  /* ── OHDS SCORE ── */
+  .ohds-card {}
+  .ohds-row { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:16px; gap:16px; }
+  .ohds-score-wrap { display:flex; align-items:baseline; gap:4px; }
+  .ohds-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:var(--bark-light); margin-bottom:6px; }
+  .ohds-score { font-family:var(--font-display); font-size:52px; font-weight:700; line-height:1; color:var(--bark); }
+  .ohds-max { font-size:20px; color:var(--bark-light); font-family:var(--font-display); }
+  .ohds-right { display:flex; flex-direction:column; align-items:flex-end; gap:10px; padding-top:4px; }
+  .ohds-carb-row { display:flex; flex-direction:column; align-items:flex-end; }
+  .ohds-carb-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--bark-light); }
+  .ohds-carb-value { font-size:18px; font-weight:700; font-family:var(--font-display); color:var(--amber); }
+  .ohds-bar-wrap { margin-bottom:16px; }
+  .ohds-bar-bg { height:10px; background:var(--sand); border-radius:100px; overflow:hidden; margin-bottom:4px; }
+  .ohds-bar-fill { height:100%; border-radius:100px; transition:width 1s ease, background 0.4s; background:var(--sage); }
+  .ohds-bar-labels { display:flex; justify-content:space-between; font-size:10px; color:var(--bark-light); font-weight:600; }
+
+  /* ── NUTRITION COMBINED SECTION ── */
+  .nutrition-section-header {
+    font-family: var(--font-display);
+    font-size: 16px; font-weight: 700;
+    color: var(--bark);
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--sand);
+  }
+  .nutrition-section-divider { height:1px; background:var(--sand); margin:20px 0; }
+  .mechanism-block { font-size:14px; line-height:1.8; color:var(--bark-mid); margin-bottom:4px; }
+
+  /* ── ACTION PLAN INTRO ── */
+  .action-plan-intro { font-size:14px; color:var(--bark-mid); line-height:1.7; margin-bottom:16px; font-style:italic; }
+
 </style>
 </head>
 <body>
@@ -949,6 +981,48 @@
           <label class="check-item"><input type="checkbox" value="table scraps"> 🍽 Table Scraps</label>
           <label class="check-item"><input type="checkbox" value="kibble as treats"> Kibble as Treats</label>
           <label class="check-item"><input type="checkbox" value="no regular treats"> None</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Treat Frequency</label>
+        <div class="select-wrap">
+          <select id="treatFrequency">
+            <option value="">Select...</option>
+            <option value="multiple times daily">Multiple times a day</option>
+            <option value="once daily">About once a day</option>
+            <option value="a few times a week">A few times a week</option>
+            <option value="rarely">Rarely / Special occasions only</option>
+            <option value="never">Never</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Feeding Schedule</label>
+        <div class="select-wrap">
+          <select id="feedingSchedule">
+            <option value="">Select...</option>
+            <option value="once daily">Once a day</option>
+            <option value="twice daily">Twice a day</option>
+            <option value="three times daily">Three times a day</option>
+            <option value="free fed (always available)">Free fed — food always available</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Primary Protein Source in Main Food</label>
+        <div class="select-wrap">
+          <select id="proteinSource">
+            <option value="">Select...</option>
+            <option value="chicken or turkey">Chicken / Turkey</option>
+            <option value="beef or lamb">Beef / Lamb</option>
+            <option value="fish or salmon">Fish / Salmon</option>
+            <option value="mixed animal proteins">Mixed Animal Proteins</option>
+            <option value="plant-based protein">Plant-Based (pea, soy)</option>
+            <option value="unknown">Not sure</option>
+          </select>
         </div>
       </div>
 
@@ -1212,75 +1286,92 @@
     <!-- ── NUTRITION SECTION ── -->
     <div class="nutrition-section">
 
-      <!-- Diet Rating Card -->
-      <div class="card diet-rating-card">
-        <div class="section-tag">🥗 Diet &amp; Oral Health Analysis</div>
-        <div class="diet-rating-row">
-          <div>
-            <div class="diet-rating-label">Current Diet Rating</div>
-            <div class="diet-rating-value" id="dietRating">—</div>
+      <!-- OHDS Score + Diet Overview -->
+      <div class="card ohds-card">
+        <div class="section-tag">🥗 Nutrition &amp; Oral Health</div>
+        <div class="ohds-row">
+          <div class="ohds-score-wrap">
+            <div class="ohds-label">Oral Health Diet Score</div>
+            <div class="ohds-score" id="ohdsScore">—</div>
+            <div class="ohds-max">/10</div>
           </div>
-          <div class="diet-rating-badge" id="dietRatingBadge">—</div>
+          <div class="ohds-right">
+            <div class="diet-rating-badge" id="dietRatingBadge">—</div>
+            <div class="ohds-carb-row">
+              <span class="ohds-carb-label">Est. dietary carbs</span>
+              <span class="ohds-carb-value" id="estCarbPct">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="ohds-bar-wrap">
+          <div class="ohds-bar-bg">
+            <div class="ohds-bar-fill" id="ohdsBarFill" style="width:0%"></div>
+          </div>
+          <div class="ohds-bar-labels"><span>Poor</span><span>Fair</span><span>Good</span><span>Excellent</span></div>
         </div>
         <div class="diet-assessment-text" id="dietAssessment"></div>
       </div>
 
-      <!-- Mechanism Card — the deep insight -->
-      <div class="card mechanism-card">
-        <div class="section-tag">🔬 How Your Dog's Diet Affects Their Teeth</div>
-        <div class="mechanism-text" id="dietMechanism"></div>
-        <div class="divider"></div>
-        <div class="mechanism-label">Oral pH Impact</div>
-        <div class="mechanism-text" id="oralpHImpact"></div>
-      </div>
-
-      <!-- Treat Analysis -->
+      <!-- Combined Food + Treat deep dive -->
       <div class="card">
-        <div class="section-tag">🦴 Treat Analysis</div>
-        <div class="treat-text" id="treatAnalysis"></div>
+        <div class="section-tag">🔬 Understanding Your Dog's Diet</div>
+
+        <div class="nutrition-section-header">🍽 Main Food</div>
+        <div class="mechanism-block" id="dietMechanism"></div>
+
+        <div class="nutrition-section-divider"></div>
+
+        <div class="nutrition-section-header">🦴 Treats &amp; Snacks</div>
+        <div class="mechanism-block" id="treatAnalysis"></div>
+
+        <div class="nutrition-section-divider"></div>
+
+        <div class="nutrition-section-header">🔬 The Science Behind It</div>
+        <div class="mechanism-block" id="oralpHImpact"></div>
       </div>
 
       <!-- Primary Recommendation -->
       <div class="primary-rec-card">
-        <div class="primary-rec-eyebrow">Most Important Action Right Now</div>
+        <div class="primary-rec-eyebrow">The Most Important Thing Right Now</div>
         <div class="primary-rec-text" id="primaryRec">—</div>
       </div>
 
-      <!-- Food Recommendations -->
+      <!-- Suggestions — food and product -->
       <div class="card">
-        <div class="section-tag">🍽 Food &amp; Product Recommendations</div>
+        <div class="section-tag">💡 Suggestions Worth Considering</div>
         <div class="rec-list" id="recList"></div>
       </div>
 
-      <!-- Ingredients -->
+      <!-- Ingredient Guide -->
       <div class="card">
-        <div class="section-tag">🏷 Ingredient Guide</div>
+        <div class="section-tag">🏷 What to Look for on the Label</div>
         <div class="ingredient-col-grid">
           <div>
-            <div class="ingredient-col-label seek">✅ Look For</div>
+            <div class="ingredient-col-label seek">✅ Worth Seeking Out</div>
             <div class="tags-row" id="seekTags"></div>
           </div>
           <div>
-            <div class="ingredient-col-label avoid">❌ Reduce or Avoid</div>
+            <div class="ingredient-col-label avoid">⚠️ Worth Reducing</div>
             <div class="tags-row" id="avoidTags"></div>
           </div>
         </div>
       </div>
 
-      <!-- 30/60/90 Action Plan -->
-      <div class="card">
-        <div class="section-tag">📅 Your Action Plan</div>
+      <!-- Journey / Action Plan -->
+      <div class="card" id="actionPlanCard">
+        <div class="section-tag" id="actionPlanTag">📅 A Suggested Path Forward</div>
+        <div class="action-plan-intro" id="actionPlanIntro"></div>
         <div class="action-plan-grid">
           <div class="action-plan-item">
-            <div class="action-plan-day">Day 30</div>
+            <div class="action-plan-day" id="planLabel30">First Month</div>
             <div class="action-plan-text" id="plan30">—</div>
           </div>
           <div class="action-plan-item">
-            <div class="action-plan-day">Day 60</div>
+            <div class="action-plan-day" id="planLabel60">Two Months In</div>
             <div class="action-plan-text" id="plan60">—</div>
           </div>
           <div class="action-plan-item">
-            <div class="action-plan-day">Day 90</div>
+            <div class="action-plan-day" id="planLabel90">Three Months</div>
             <div class="action-plan-text" id="plan90">—</div>
           </div>
         </div>
@@ -1288,7 +1379,7 @@
 
       <!-- Home Care -->
       <div class="card">
-        <div class="section-tag">🪥 Home Care Routine</div>
+        <div class="section-tag">🪥 Home Care</div>
         <ul class="findings-list" id="homeCareTips"></ul>
         <div class="positive-note" id="positiveNote"></div>
       </div>
@@ -1471,6 +1562,9 @@ function collectProfile() {
     currentFood: document.getElementById('currentFood').value.trim(),
     dietType: document.getElementById('dietType').value,
     treats: getCheckedValues('treatsGroup').join(', ') || 'None specified',
+    treatFrequency: document.getElementById('treatFrequency').value || 'Not specified',
+    feedingSchedule: document.getElementById('feedingSchedule').value || 'Not specified',
+    proteinSource: document.getElementById('proteinSource').value || 'Unknown',
     homeCare: getCheckedValues('homeCareGroup').join(', ') || 'None',
     bodyCondition: document.getElementById('bodyCondition').value || 'Not reported',
     lastCleaning: document.getElementById('lastCleaning').value || 'Unknown',
@@ -1653,68 +1747,78 @@ function renderResults(result, profile) {
     badge.textContent = URGENCY_LABELS[urgency] || URGENCY_LABELS.routine;
   }
 
-  // Diet rating
-  const rating = (nutrition.diet_oral_health_rating || 'fair').toLowerCase();
-  document.getElementById('dietRating').textContent = rating.charAt(0).toUpperCase() + rating.slice(1);
-  const ratingBadge = document.getElementById('dietRatingBadge');
-  ratingBadge.textContent = rating.toUpperCase();
-  ratingBadge.className = `diet-rating-badge ${RATING_CLASSES[rating] || 'rating-fair'}`;
-  document.getElementById('dietAssessment').textContent = nutrition.diet_assessment || '';
+  // OHDS Score + carb estimate
+  const ohds = nutrition.ohds_score || 5;
+  const ohdsEl = document.getElementById('ohdsScore');
+  ohdsEl.textContent = ohds;
+  const ohdsColor = ohds >= 8 ? 'var(--sage)' : ohds >= 6 ? '#B8960A' : ohds >= 4 ? 'var(--amber)' : 'var(--rose)';
+  ohdsEl.style.color = ohdsColor;
+  const ohdsBar = document.getElementById('ohdsBarFill');
+  if (ohdsBar) { ohdsBar.style.width = (ohds/10*100) + '%'; ohdsBar.style.background = ohdsColor; }
+  const carbEl = document.getElementById('estCarbPct');
+  if (carbEl) carbEl.textContent = nutrition.estimated_carb_pct ? '~' + nutrition.estimated_carb_pct + '%' : '--';
 
-  // Mechanism — the deep science
-  document.getElementById('dietMechanism').textContent = nutrition.diet_mechanism || '';
-  document.getElementById('oralpHImpact').textContent  = nutrition.oral_ph_impact || '';
-  document.getElementById('treatAnalysis').textContent = nutrition.treat_analysis || '';
+  // Diet rating badge
+  const rating = (nutrition.diet_oral_health_rating || 'fair').toLowerCase();
+  const ratingBadge = document.getElementById('dietRatingBadge');
+  if (ratingBadge) { ratingBadge.textContent = rating.toUpperCase(); ratingBadge.className = 'diet-rating-badge ' + (RATING_CLASSES[rating] || 'rating-fair'); }
+  const daEl = document.getElementById('dietAssessment'); if (daEl) daEl.textContent = nutrition.diet_assessment || '';
+
+  // Combined food + treat + science blocks
+  const dmEl = document.getElementById('dietMechanism'); if (dmEl) dmEl.textContent = nutrition.diet_mechanism || '';
+  const taEl = document.getElementById('treatAnalysis'); if (taEl) taEl.textContent = nutrition.treat_analysis || '';
+  const phEl = document.getElementById('oralpHImpact'); if (phEl) phEl.textContent = nutrition.oral_ph_impact || '';
 
   // Primary recommendation
-  document.getElementById('primaryRec').textContent = nutrition.primary_recommendation || '—';
+  const prEl = document.getElementById('primaryRec'); if (prEl) prEl.textContent = nutrition.primary_recommendation || '---';
 
-  // Food recommendations
+  // Suggestions list
   const recList = document.getElementById('recList');
-  recList.innerHTML = '';
-  (nutrition.food_recommendations || []).forEach(rec => {
-    const div = document.createElement('div');
-    div.className = 'rec-item finding-item';
-    div.style.flexDirection = 'column';
-    div.style.alignItems = 'flex-start';
-    div.style.borderLeft = `3px solid ${rec.priority === 'high' ? 'var(--rose)' : rec.priority === 'medium' ? 'var(--amber)' : 'var(--sage)'}`;
-    div.innerHTML =
-      `<div class="rec-item-header">
-        <span class="rec-item-cat">${escHtml(rec.category || '')}</span>
-        ${rec.vohc_approved ? '<span class="vohc-badge">VOHC ✓</span>' : ''}
-        <span class="priority-badge pb-${rec.priority || 'medium'}">${(rec.priority || 'medium').toUpperCase()}</span>
-      </div>
-      <div class="rec-item-rec">${escHtml(rec.recommendation || '')}</div>
-      ${rec.mechanism ? `<div class="rec-item-mechanism">Why: ${escHtml(rec.mechanism)}</div>` : ''}`;
-    recList.appendChild(div);
-  });
+  if (recList) {
+    recList.innerHTML = '';
+    (nutrition.food_recommendations || []).forEach(function(rec) {
+      const div = document.createElement('div');
+      div.className = 'rec-item finding-item';
+      div.style.cssText = 'flex-direction:column;align-items:flex-start;border-left:3px solid ' + (rec.priority === 'high' ? 'var(--rose)' : rec.priority === 'medium' ? 'var(--amber)' : 'var(--sage)');
+      div.innerHTML = '<div class="rec-item-header"><span class="rec-item-cat">' + escHtml(rec.category||'') + '</span>' + (rec.vohc_approved ? '<span class="vohc-badge">VOHC category</span>' : '') + '</div><div class="rec-item-rec">' + escHtml(rec.recommendation||'') + '</div>' + (rec.mechanism ? '<div class="rec-item-mechanism">' + escHtml(rec.mechanism) + '</div>' : '');
+      recList.appendChild(div);
+    });
+  }
 
   // Ingredients
-  const seek = nutrition.ingredients_to_seek || [];
-  const avoid = nutrition.ingredients_to_avoid || [];
-  document.getElementById('seekTags').innerHTML  = seek.map(s => `<span class="tag tag-seek">+ ${escHtml(s)}</span>`).join('');
-  document.getElementById('avoidTags').innerHTML = avoid.map(s => `<span class="tag tag-avoid">− ${escHtml(s)}</span>`).join('');
+  const seekEl = document.getElementById('seekTags'); const avoidEl = document.getElementById('avoidTags');
+  if (seekEl) seekEl.innerHTML = (nutrition.ingredients_to_seek||[]).map(function(s){return '<span class="tag tag-seek">+ ' + escHtml(s) + '</span>';}).join('');
+  if (avoidEl) avoidEl.innerHTML = (nutrition.ingredients_to_avoid||[]).map(function(s){return '<span class="tag tag-avoid">- ' + escHtml(s) + '</span>';}).join('');
 
   // Action plan
   const ap = nutrition.action_plan || {};
-  document.getElementById('plan30').textContent = ap.day_30 || 'Begin recommended dietary changes';
-  document.getElementById('plan60').textContent = ap.day_60 || 'Assess improvement and adjust';
-  document.getElementById('plan90').textContent = ap.day_90 || 'Rescan with DentalPaw';
+  const apIntro = document.getElementById('actionPlanIntro'); if (apIntro) apIntro.textContent = nutrition.action_plan_intro || '';
+  if (risk === 'RED') {
+    const aptEl = document.getElementById('actionPlanTag'); if (aptEl) aptEl.textContent = 'What Needs to Happen Now';
+    const apl30 = document.getElementById('planLabel30'); if (apl30) apl30.textContent = 'This Week';
+    const apl60 = document.getElementById('planLabel60'); if (apl60) apl60.textContent = 'This Month';
+    const apl90 = document.getElementById('planLabel90'); if (apl90) apl90.textContent = 'Following Up';
+  }
+  const p30 = document.getElementById('plan30'); if (p30) p30.textContent = ap.day_30 || '--';
+  const p60 = document.getElementById('plan60'); if (p60) p60.textContent = ap.day_60 || '--';
+  const p90 = document.getElementById('plan90'); if (p90) p90.textContent = ap.day_90 || '--';
 
-  // Home care
+  // Home care tips
   const hct = document.getElementById('homeCareTips');
-  hct.innerHTML = '';
-  (nutrition.home_care_tips || []).forEach(tip => {
-    const li = document.createElement('li');
-    li.className = 'finding-item';
-    li.innerHTML = `<span class="fi-icon">→</span> ${escHtml(tip)}`;
-    hct.appendChild(li);
-  });
-  document.getElementById('positiveNote').textContent = nutrition.positive_note || '';
+  if (hct) {
+    hct.innerHTML = '';
+    (nutrition.home_care_tips || []).forEach(function(tip) {
+      const li = document.createElement('li'); li.className = 'finding-item';
+      li.innerHTML = '<span class="fi-icon">&#8594;</span> ' + escHtml(tip);
+      hct.appendChild(li);
+    });
+  }
+  const pnEl = document.getElementById('positiveNote'); if (pnEl) pnEl.textContent = nutrition.positive_note || '';
 
   // Recheck
   const days = nutrition.recheck_days || 60;
-  document.getElementById('recheckText').textContent = `Recheck recommended in ${days} days — ${new Date(Date.now() + days * 86400000).toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'})}`;
+  const rtEl = document.getElementById('recheckText');
+  if (rtEl) rtEl.textContent = 'Recheck recommended in ' + days + ' days — ' + new Date(Date.now() + days * 86400000).toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'});
 
   // Show screen
   document.getElementById('loadingScreen').classList.remove('active');
