@@ -1,6 +1,4 @@
 // Uses native fetch - no npm dependencies needed
-// Works with Netlify built-in Node 18+ environment
-
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-sonnet-4-6";
 
@@ -78,32 +76,65 @@ exports.handler = async (event) => {
   catch { return { statusCode: 400, headers: CORS, body: JSON.stringify({error:"Invalid JSON"}) }; }
 
   const { dogProfile, images } = body;
-  if (!dogProfile || !images || !images.rightUrl) {
-    return { statusCode: 400, headers: CORS, body: JSON.stringify({error:"Missing dogProfile or images.rightUrl"}) };
+
+  if (!dogProfile || !images || !images.right || !images.right.base64) {
+    return { statusCode: 400, headers: CORS, body: JSON.stringify({error:"Missing dogProfile or images.right.base64"}) };
   }
 
   try {
     const { breed, age, sex, weight, currentFood, dietType, treats, homeCare, bodyCondition, lastCleaning, symptoms } = dogProfile;
 
-    // Build image content array
+    // Build image content array using base64
     const content = [];
-    content.push({ type:"text", text:"RIGHT BUCCAL VIEW:" });
-    content.push({ type:"image", source:{ type:"url", url:images.rightUrl } });
 
-    if (images.leftUrl) {
-      content.push({ type:"text", text:"LEFT BUCCAL VIEW:" });
-      content.push({ type:"image", source:{ type:"url", url:images.leftUrl } });
-    }
-    if (images.optionalFrontUrl) {
-      content.push({ type:"text", text:"OPTIONAL FRONTAL VIEW:" });
-      content.push({ type:"image", source:{ type:"url", url:images.optionalFrontUrl } });
-    }
-    if (images.optionalLowerUrl) {
-      content.push({ type:"text", text:"OPTIONAL LOWER VIEW:" });
-      content.push({ type:"image", source:{ type:"url", url:images.optionalLowerUrl } });
+    content.push({ type:"text", text:"RIGHT BUCCAL VIEW (right side, upper premolars and carnassial tooth):" });
+    content.push({
+      type: "image",
+      source: {
+        type: "base64",
+        media_type: images.right.mediaType || "image/jpeg",
+        data: images.right.base64,
+      }
+    });
+
+    if (images.left && images.left.base64) {
+      content.push({ type:"text", text:"LEFT BUCCAL VIEW (left side, upper premolars and carnassial tooth):" });
+      content.push({
+        type: "image",
+        source: {
+          type: "base64",
+          media_type: images.left.mediaType || "image/jpeg",
+          data: images.left.base64,
+        }
+      });
     }
 
-    content.push({ type:"text", text: breedContext(breed,age,sex,weight) +
+    if (images.optionalFront && images.optionalFront.base64) {
+      content.push({ type:"text", text:"OPTIONAL FRONTAL VIEW (incisors and canine teeth):" });
+      content.push({
+        type: "image",
+        source: {
+          type: "base64",
+          media_type: images.optionalFront.mediaType || "image/jpeg",
+          data: images.optionalFront.base64,
+        }
+      });
+    }
+
+    if (images.optionalLower && images.optionalLower.base64) {
+      content.push({ type:"text", text:"OPTIONAL LOWER BUCCAL VIEW:" });
+      content.push({
+        type: "image",
+        source: {
+          type: "base64",
+          media_type: images.optionalLower.mediaType || "image/jpeg",
+          data: images.optionalLower.base64,
+        }
+      });
+    }
+
+    content.push({ type:"text", text:
+      breedContext(breed, age, sex, weight) +
       "\nFood: " + (currentFood||"unknown") + " (" + (dietType||"unknown") + ")" +
       "\nTreats: " + (treats||"none") +
       "\nHome care: " + (homeCare||"none") +
@@ -114,7 +145,7 @@ exports.handler = async (event) => {
     });
 
     // Dental analysis
-    const dentalText = await callClaude(DENTAL_SYSTEM_PROMPT, [{role:"user",content}], 1500);
+    const dentalText = await callClaude(DENTAL_SYSTEM_PROMPT, [{role:"user", content}], 1500);
     const dental = safeParseJSON(dentalText);
 
     // Nutrition recommendations
