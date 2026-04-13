@@ -1574,12 +1574,17 @@ function collectProfile() {
 
 // ── LOADING ANIMATION ──────────────────────────────────────────────────────────
 function animateLoadingSteps() {
+  // Initial animation — step 1 starts active
+  document.getElementById('lstep1').classList.add('active');
+}
+
+function activateLoadingStep(n) {
   const steps = ['lstep1','lstep2','lstep3','lstep4'];
   steps.forEach((id, i) => {
-    setTimeout(() => {
-      steps.forEach(s => document.getElementById(s).classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }, i * 2200);
+    const el = document.getElementById(id);
+    el.classList.remove('active');
+    if (i < n - 1) el.classList.add('done');
+    else if (i === n - 1) el.classList.add('active');
   });
 }
 
@@ -1609,25 +1614,50 @@ async function runAnalysis() {
   document.getElementById('progressFill').style.width = '90%';
 
   try {
-    const response = await fetch('/.netlify/functions/analyze', {
+    // ── STEP 1: Dental analysis (with photos) ───────────────────────────────
+    activateLoadingStep(1);
+    const dentalResponse = await fetch('/.netlify/functions/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        mode: 'dental',
         dogProfile: profile,
         images: {
-          right:        { base64: state.imageBase64.right,  mediaType: state.imageMediaType.right  },
-          left:         { base64: state.imageBase64.left,   mediaType: state.imageMediaType.left   },
-          optionalFront:{ base64: state.imageBase64.front,  mediaType: state.imageMediaType.front  },
-          optionalLower:{ base64: state.imageBase64.lower,  mediaType: state.imageMediaType.lower  },
+          right:         { base64: state.imageBase64.right,  mediaType: state.imageMediaType.right  },
+          left:          { base64: state.imageBase64.left,   mediaType: state.imageMediaType.left   },
+          optionalFront: { base64: state.imageBase64.front,  mediaType: state.imageMediaType.front  },
+          optionalLower: { base64: state.imageBase64.lower,  mediaType: state.imageMediaType.lower  },
         },
       }),
     });
 
-    const result = await response.json();
+    const dentalData = await dentalResponse.json();
+    if (!dentalData.success) throw new Error(dentalData.error || 'Dental analysis failed');
+    activateLoadingStep(2);
 
-    if (!result.success) throw new Error(result.error || 'Analysis failed');
+    // ── STEP 2: Nutrition analysis (no images — much faster) ────────────────
+    activateLoadingStep(3);
+    const nutritionResponse = await fetch('/.netlify/functions/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mode: 'nutrition',
+        dogProfile: profile,
+        dentalResults: dentalData.dental,
+      }),
+    });
 
-    renderResults(result, profile);
+    const nutritionData = await nutritionResponse.json();
+    if (!nutritionData.success) throw new Error(nutritionData.error || 'Nutrition analysis failed');
+    activateLoadingStep(4);
+
+    // ── Combine and render ───────────────────────────────────────────────────
+    renderResults({
+      success: true,
+      dental: dentalData.dental,
+      nutrition: nutritionData.nutrition,
+      meta: dentalData.meta,
+    }, profile);
 
   } catch (err) {
     console.error('Analysis error:', err);
