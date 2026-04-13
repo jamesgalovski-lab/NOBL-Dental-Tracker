@@ -1,33 +1,25 @@
 exports.config = { timeout: 30 };
+
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-sonnet-4-6";
 
-const DENTAL_SYSTEM_PROMPT = `You are a veterinary dental screening assistant in a consumer wellness app. Analyze buccal photos of dog teeth. You are a screener, NOT a diagnostician.
+const DENTAL_SYSTEM_PROMPT = `You are a veterinary dental screening assistant. Analyze buccal photos of dog teeth and return a JSON scoring object.
 
-CLINICAL FOCUS: Upper PM4 (carnassial) and M1 are primary indicators.
+SCORING:
+- tartar: 0=none, 1=mild, 2=moderate, 3=severe
+- gingival: 0=healthy, 1=mild redness, 2=obvious redness, 3=severe
+- structural: 0=intact, 1=minor, 2=moderate, 3=severe
+- overall_risk: GREEN(0-2), YELLOW(3-5), ORANGE(6-7), RED(8-9)
 
-TARTAR (0-3): 0=none, 1=mild <25%, 2=moderate 25-75%, 3=severe >75%
-GINGIVAL (0-3): 0=healthy pink, 1=mild redness, 2=obvious redness/swelling, 3=severe red/recession
-STRUCTURAL (0-3): 0=intact, 1=minor chips, 2=fracture or missing, 3=severe damage
-RISK: GREEN=0-2, YELLOW=3-5, ORANGE=6-7, RED=8-9
+IMPORTANT: Your entire response must be a single valid JSON object. Begin your response with { and end with }. Do not include any text before or after the JSON.`;
 
-Never state specific diagnoses. Always recommend vet eval for non-zero gingival scores. Be warm and encouraging.
+const NUTRITION_SYSTEM_PROMPT = `You are a canine nutrition advisor for oral health. Return dietary recommendations as JSON.
 
-You MUST respond with ONLY a JSON object. No explanation, no markdown, no code fences. Start your response with { and end with }.
-
-Required format:
-{"tartar":{"right":0,"left":0,"composite":0,"notes":"brief note"},"gingival":{"right":0,"left":0,"composite":0,"notes":"brief note"},"structural":{"score":0,"notes":"brief note"},"overall_risk":"GREEN","composite_score":0,"image_quality":{"right":"good","left":"good","notes":"brief note"},"key_findings":["finding 1","finding 2"],"owner_summary":"2-3 warm plain-language sentences for the owner","vet_urgency":"routine","nutrition_flags":["flag1"],"confidence":"high"}`;
-
-const NUTRITION_SYSTEM_PROMPT = `You are a canine nutrition advisor specializing in oral health. Give specific evidence-based recommendations. Only recommend VOHC-accepted products. Be warm and motivating.
-
-You MUST respond with ONLY a JSON object. No explanation, no markdown, no code fences. Start your response with { and end with }.
-
-Required format:
-{"diet_assessment":"1-2 sentences on diet impact","primary_recommendation":"single most impactful change","food_recommendations":[{"category":"kibble","recommendation":"specific advice","priority":"high","vohc_approved":true}],"ingredients_to_seek":["ingredient 1"],"ingredients_to_avoid":["ingredient 1"],"home_care_tips":["tip 1","tip 2"],"recheck_days":60,"positive_note":"one encouraging sentence"}`;
+IMPORTANT: Your entire response must be a single valid JSON object. Begin your response with { and end with }. Do not include any text before or after the JSON.`;
 
 async function callClaude(systemPrompt, messages, maxTokens) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set in environment variables");
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set");
 
   const res = await fetch(ANTHROPIC_API_URL, {
     method: "POST",
@@ -36,7 +28,12 @@ async function callClaude(systemPrompt, messages, maxTokens) {
       "x-api-key": apiKey,
       "anthropic-version": "2023-06-01",
     },
-    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens || 1500, system: systemPrompt, messages }),
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: maxTokens || 1500,
+      system: systemPrompt,
+      messages
+    }),
   });
 
   if (!res.ok) {
@@ -45,49 +42,66 @@ async function callClaude(systemPrompt, messages, maxTokens) {
   }
 
   const data = await res.json();
-  return data.content.filter(b => b.type === "text").map(b => b.text).join("");
+  const text = data.content.filter(b => b.type === "text").map(b => b.text).join("");
+  console.log("Claude raw response:", text.substring(0, 500));
+  return text;
 }
 
-function safeParseJSON(text) {
-  // Log raw response for debugging
-  console.log("Raw Claude response (first 200 chars):", text.substring(0, 200));
-
-  // Strategy 1: direct parse
+function extractJSON(text) {
+  // Try 1: direct parse
   try { return JSON.parse(text.trim()); } catch(e) {}
-
-  // Strategy 2: strip markdown fences
-  let cleaned = text
-    .replace(/^```json\s*/i, "")
-    .replace(/^```\s*/i, "")
-    .replace(/\s*```$/i, "")
-    .trim();
-  try { return JSON.parse(cleaned); } catch(e) {}
-
-  // Strategy 3: extract first { ... } block
-  const match = text.match(/\{[\s\S]*\}/);
-  if (match) {
-    try { return JSON.parse(match[0]); } catch(e) {}
+  // Try 2: strip code fences
+  try { return JSON.parse(text.replace(/```[\w]*\n?/g, "").trim()); } catch(e) {}
+  // Try 3: extract outermost { }
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start !== -1 && end > start) {
+    try { return JSON.parse(text.slice(start, end + 1)); } catch(e) {}
   }
-
-  // Strategy 4: find JSON start/end manually
-  const start = text.indexOf('{');
-  const end = text.lastIndexOf('}');
-  if (start !== -1 && end !== -1 && end > start) {
-    try { return JSON.parse(text.substring(start, end + 1)); } catch(e) {}
-  }
-
-  throw new Error("Could not parse JSON from Claude response: " + text.substring(0, 300));
+  throw new Error("No valid JSON found in: " + text.substring(0, 200));
 }
 
-function breedContext(breed, age, sex, weight) {
-  const b = (breed||"").toLowerCase();
-  let ctx = "Breed: " + breed + " | Age: " + age + " yrs | Sex: " + sex;
-  if (weight) ctx += " | Weight: " + weight + "lbs";
-  if (["chihuahua","yorkie","yorkshire","maltese","dachshund","pomeranian","shih tzu","bichon"].some(x=>b.includes(x))) ctx += " | FLAG: small breed high perio risk";
-  if (["bulldog","pug","boston terrier","boxer","shih tzu"].some(x=>b.includes(x))) ctx += " | FLAG: brachycephalic crowding risk";
-  if (parseFloat(age)>=7) ctx += " | FLAG: senior dog";
-  if (parseFloat(age)<=2) ctx += " | FLAG: young dog - tartar is early warning";
-  return ctx;
+// Safe fallback dental result
+function fallbackDental() {
+  return {
+    tartar: { right: 0, left: 0, composite: 0, notes: "Could not assess" },
+    gingival: { right: 0, left: 0, composite: 0, notes: "Could not assess" },
+    structural: { score: 0, notes: "Could not assess" },
+    overall_risk: "YELLOW",
+    composite_score: 3,
+    image_quality: { right: "marginal", left: "marginal", notes: "Analysis incomplete" },
+    key_findings: ["Analysis could not be completed — please retake photos in good lighting"],
+    owner_summary: "We had trouble analysing these photos. Please try again with bright lighting and the cheek gently pulled back to show the back teeth clearly.",
+    vet_urgency: "routine",
+    nutrition_flags: [],
+    confidence: "low"
+  };
+}
+
+// Safe fallback nutrition result
+function fallbackNutrition() {
+  return {
+    diet_assessment: "Unable to generate personalised recommendations at this time.",
+    primary_recommendation: "Schedule a professional dental check with your vet for a full assessment.",
+    food_recommendations: [
+      { category: "chew", recommendation: "VOHC-accepted dental chews daily", priority: "high", vohc_approved: true }
+    ],
+    ingredients_to_seek: ["high-quality protein", "low simple carbohydrates"],
+    ingredients_to_avoid: ["added sugars", "corn syrup"],
+    home_care_tips: ["Brush teeth daily with dog-safe toothpaste", "Provide VOHC-approved dental chews"],
+    recheck_days: 60,
+    positive_note: "The fact that you are checking your dog's dental health puts you ahead of most pet owners!"
+  };
+}
+
+function breedFlags(breed, age) {
+  const b = (breed || "").toLowerCase();
+  const flags = [];
+  if (["chihuahua","yorkie","yorkshire","maltese","dachshund","pomeranian","shih tzu","bichon","miniature"].some(x => b.includes(x))) flags.push("small breed - high periodontal risk");
+  if (["bulldog","pug","boston terrier","boxer"].some(x => b.includes(x))) flags.push("brachycephalic - crowding risk");
+  if (parseFloat(age) >= 7) flags.push("senior dog");
+  if (parseFloat(age) <= 2) flags.push("young dog - any tartar is an early warning");
+  return flags.join(", ");
 }
 
 const CORS = {
@@ -99,93 +113,113 @@ const CORS = {
 
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") return { statusCode: 200, headers: CORS, body: "" };
-  if (event.httpMethod !== "POST") return { statusCode: 405, headers: CORS, body: JSON.stringify({error:"Method not allowed"}) };
+  if (event.httpMethod !== "POST") return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: "Method not allowed" }) };
 
   let body;
   try { body = JSON.parse(event.body); }
-  catch { return { statusCode: 400, headers: CORS, body: JSON.stringify({error:"Invalid JSON body"}) }; }
+  catch { return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid request body" }) }; }
 
   const { dogProfile, images } = body;
   if (!dogProfile || !images || !images.right || !images.right.base64) {
-    return { statusCode: 400, headers: CORS, body: JSON.stringify({error:"Missing dogProfile or images.right.base64"}) };
+    return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Missing required fields" }) };
   }
 
-  // Log incoming payload size for debugging
-  const payloadSize = Math.round((event.body || '').length / 1024);
-  console.log("Payload size:", payloadSize, "KB");
+  const { breed, age, sex, weight, currentFood, dietType, treats, homeCare, bodyCondition, lastCleaning, symptoms } = dogProfile;
 
-  try {
-    const { breed, age, sex, weight, currentFood, dietType, treats, homeCare, bodyCondition, lastCleaning, symptoms } = dogProfile;
+  console.log("Analysing dog:", breed, age, "yrs");
+  console.log("Payload size:", Math.round(event.body.length / 1024), "KB");
 
-    // Build image content blocks
-    const content = [];
+  // ── Build dental prompt ──────────────────────────────────────────────────────
+  const dentalContent = [];
 
-    content.push({ type:"text", text:"RIGHT BUCCAL VIEW (right side, upper premolars and carnassial tooth):" });
-    content.push({ type:"image", source:{ type:"base64", media_type: images.right.mediaType || "image/jpeg", data: images.right.base64 }});
+  dentalContent.push({ type: "text", text: "RIGHT BUCCAL VIEW:" });
+  dentalContent.push({ type: "image", source: { type: "base64", media_type: images.right.mediaType || "image/jpeg", data: images.right.base64 }});
 
-    if (images.left && images.left.base64) {
-      content.push({ type:"text", text:"LEFT BUCCAL VIEW (left side, upper premolars and carnassial tooth):" });
-      content.push({ type:"image", source:{ type:"base64", media_type: images.left.mediaType || "image/jpeg", data: images.left.base64 }});
-    }
-
-    if (images.optionalFront && images.optionalFront.base64) {
-      content.push({ type:"text", text:"OPTIONAL FRONTAL VIEW:" });
-      content.push({ type:"image", source:{ type:"base64", media_type: images.optionalFront.mediaType || "image/jpeg", data: images.optionalFront.base64 }});
-    }
-
-    if (images.optionalLower && images.optionalLower.base64) {
-      content.push({ type:"text", text:"OPTIONAL LOWER BUCCAL VIEW:" });
-      content.push({ type:"image", source:{ type:"base64", media_type: images.optionalLower.mediaType || "image/jpeg", data: images.optionalLower.base64 }});
-    }
-
-    content.push({ type:"text", text:
-      breedContext(breed, age, sex, weight) +
-      "\nFood: " + (currentFood||"unknown") + " (" + (dietType||"unknown") + ")" +
-      "\nTreats: " + (treats||"none") +
-      "\nHome care: " + (homeCare||"none") +
-      "\nBody condition: " + (bodyCondition||"unknown") +
-      "\nLast cleaning: " + (lastCleaning||"unknown") +
-      "\nSymptoms: " + (symptoms&&symptoms.length>0 ? symptoms.join(", ") : "none") +
-      "\n\nAnalyze the buccal photos focusing on upper PM4 and M1. Respond with JSON only — no markdown, no explanation, just the JSON object."
-    });
-
-    // Dental analysis
-    const dentalText = await callClaude(DENTAL_SYSTEM_PROMPT, [{role:"user", content}], 1500);
-    const dental = safeParseJSON(dentalText);
-
-    // Nutrition recommendations
-    const nutritionText = await callClaude(
-      NUTRITION_SYSTEM_PROMPT,
-      [{role:"user", content:
-        "Dental results: " + JSON.stringify(dental) +
-        "\nDog: " + breed + ", " + age + "yrs, " + sex +
-        ", Food: " + (currentFood||"unknown") + " (" + (dietType||"unknown") + ")" +
-        ", Treats: " + (treats||"none") +
-        ", Home care: " + (homeCare||"none") +
-        ", Symptoms: " + (symptoms&&symptoms.length>0?symptoms.join(", "):"none") +
-        "\n\nRespond with JSON only — no markdown, no explanation, just the JSON object."
-      }],
-      1200
-    );
-    const nutrition = safeParseJSON(nutritionText);
-
-    return {
-      statusCode: 200,
-      headers: CORS,
-      body: JSON.stringify({
-        success: true,
-        dental,
-        nutrition,
-        meta: { analyzedAt: new Date().toISOString(), model: MODEL }
-      }),
-    };
-
-  } catch (err) {
-    console.error("Handler error:", err.message);
-    return {
-      statusCode: 500,
-      headers: CORS,
-      body: JSON.stringify({ success: false, error: err.message }),
-    };
+  if (images.left && images.left.base64) {
+    dentalContent.push({ type: "text", text: "LEFT BUCCAL VIEW:" });
+    dentalContent.push({ type: "image", source: { type: "base64", media_type: images.left.mediaType || "image/jpeg", data: images.left.base64 }});
   }
+
+  if (images.optionalFront && images.optionalFront.base64) {
+    dentalContent.push({ type: "text", text: "FRONTAL VIEW:" });
+    dentalContent.push({ type: "image", source: { type: "base64", media_type: images.optionalFront.mediaType || "image/jpeg", data: images.optionalFront.base64 }});
+  }
+
+  if (images.optionalLower && images.optionalLower.base64) {
+    dentalContent.push({ type: "text", text: "LOWER BUCCAL VIEW:" });
+    dentalContent.push({ type: "image", source: { type: "base64", media_type: images.optionalLower.mediaType || "image/jpeg", data: images.optionalLower.base64 }});
+  }
+
+  const flags = breedFlags(breed, age);
+  dentalContent.push({ type: "text", text:
+    `Dog: ${breed}, ${age}yrs, ${sex}${weight ? ", " + weight + "lbs" : ""}${flags ? " | " + flags : ""}
+Food: ${currentFood || "unknown"} (${dietType || "unknown"})
+Treats: ${treats || "none"} | Home care: ${homeCare || "none"}
+Body condition: ${bodyCondition || "unknown"} | Last cleaning: ${lastCleaning || "unknown"}
+Symptoms: ${symptoms && symptoms.length > 0 ? symptoms.join(", ") : "none"}
+
+Analyse the buccal photos focusing on upper PM4 (carnassial) and M1.
+Return a JSON object with these exact keys:
+{
+  "tartar": {"right": 0-3, "left": 0-3, "composite": 0-3, "notes": "string"},
+  "gingival": {"right": 0-3, "left": 0-3, "composite": 0-3, "notes": "string"},
+  "structural": {"score": 0-3, "notes": "string"},
+  "overall_risk": "GREEN|YELLOW|ORANGE|RED",
+  "composite_score": 0-9,
+  "image_quality": {"right": "good|marginal|poor", "left": "good|marginal|poor", "notes": "string"},
+  "key_findings": ["string"],
+  "owner_summary": "2-3 warm sentences",
+  "vet_urgency": "routine|soon|prompt|urgent",
+  "nutrition_flags": ["string"],
+  "confidence": "high|medium|low"
+}`
+  });
+
+  // ── Run both analyses in parallel to save time ──────────────────────────────
+  const nutritionPrompt = `Dog: ${breed}, ${age}yrs, ${sex}, food: ${currentFood} (${dietType}), treats: ${treats || "none"}, home care: ${homeCare || "none"}, symptoms: ${symptoms && symptoms.length > 0 ? symptoms.join(", ") : "none"}
+
+Return a JSON object with these exact keys:
+{
+  "diet_assessment": "string",
+  "primary_recommendation": "string",
+  "food_recommendations": [{"category": "string", "recommendation": "string", "priority": "high|medium|low", "vohc_approved": true|false}],
+  "ingredients_to_seek": ["string"],
+  "ingredients_to_avoid": ["string"],
+  "home_care_tips": ["string"],
+  "recheck_days": 30|60|90,
+  "positive_note": "string"
+}`;
+
+  const [dentalResult, nutritionResult] = await Promise.allSettled([
+    callClaude(DENTAL_SYSTEM_PROMPT, [{ role: "user", content: dentalContent }], 1200),
+    callClaude(NUTRITION_SYSTEM_PROMPT, [{ role: "user", content: nutritionPrompt }], 1000),
+  ]);
+
+  let dental = fallbackDental();
+  let nutrition = fallbackNutrition();
+
+  if (dentalResult.status === "fulfilled") {
+    try { dental = extractJSON(dentalResult.value); console.log("Dental OK, risk:", dental.overall_risk); }
+    catch (e) { console.error("Dental parse failed:", e.message); }
+  } else {
+    console.error("Dental call failed:", dentalResult.reason);
+  }
+
+  if (nutritionResult.status === "fulfilled") {
+    try { nutrition = extractJSON(nutritionResult.value); console.log("Nutrition OK"); }
+    catch (e) { console.error("Nutrition parse failed:", e.message); }
+  } else {
+    console.error("Nutrition call failed:", nutritionResult.reason);
+  }
+
+  return {
+    statusCode: 200,
+    headers: CORS,
+    body: JSON.stringify({
+      success: true,
+      dental,
+      nutrition,
+      meta: { analyzedAt: new Date().toISOString(), model: MODEL }
+    }),
+  };
 };
