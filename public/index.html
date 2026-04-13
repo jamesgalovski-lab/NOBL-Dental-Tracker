@@ -598,6 +598,240 @@
     display: none; margin-top: 12px;
   }
   .error-msg.show { display: block; }
+
+  /* ── ACTION BAR ── */
+  .action-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; gap: 12px; flex-wrap: wrap;
+  }
+  .action-bar-dog {
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 700; color: var(--bark);
+  }
+  .action-bar-btns { display: flex; gap: 8px; }
+  .action-btn {
+    padding: 9px 16px;
+    background: var(--bark); color: white;
+    border: none; border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .action-btn:hover { background: var(--bark-mid); transform: translateY(-1px); }
+  .action-btn-outline {
+    background: transparent; color: var(--bark);
+    border: 1.5px solid var(--sand);
+  }
+  .action-btn-outline:hover { background: var(--sand); }
+
+  /* ── RISK BANNER UPGRADED ── */
+  .risk-emoji { font-size: 36px; margin-bottom: 8px; }
+  .risk-meta { font-size: 12px; opacity: 0.6; margin-top: 8px; }
+
+  /* ── GAUGE SCORES ── */
+  .gauge-wrap {
+    position: relative; width: 80px; height: 80px;
+    margin: 10px auto 8px;
+  }
+  .gauge { width: 80px; height: 80px; transform: rotate(-90deg); }
+  .gauge-bg { fill: none; stroke: var(--sand); stroke-width: 8; }
+  .gauge-fill {
+    fill: none; stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.8s ease, stroke 0.4s ease;
+  }
+  .gauge-value {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 700;
+  }
+  .score-note {
+    font-size: 11px; color: var(--bark-light);
+    text-align: center; margin-top: 4px;
+    font-style: italic; line-height: 1.3;
+  }
+
+  /* ── BILATERAL COMPARISON ── */
+  .bilateral-grid {
+    display: grid; grid-template-columns: 1fr 1px 1fr; gap: 16px;
+    margin-top: 12px;
+  }
+  .bilateral-divider { background: var(--sand); }
+  .bilateral-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; color: var(--bark-light); margin-bottom: 10px;
+  }
+  .bilateral-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0; border-bottom: 1px solid var(--sand);
+    font-size: 13px; color: var(--bark-mid);
+  }
+  .bilateral-score {
+    font-weight: 700; font-size: 15px;
+    font-family: var(--font-display);
+  }
+  .asymmetry-note {
+    margin-top: 12px; padding: 10px 14px;
+    background: var(--amber-pale);
+    border-radius: var(--radius-sm);
+    font-size: 13px; color: var(--amber);
+    border-left: 3px solid var(--amber);
+  }
+
+  /* ── VET URGENCY BADGE ── */
+  .vet-urgency-badge {
+    margin-top: 12px; padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .urgency-routine { background: var(--sage-pale); color: var(--sage); }
+  .urgency-soon { background: var(--amber-pale); color: var(--amber); }
+  .urgency-prompt { background: #FFF0E6; color: #C4621A; }
+  .urgency-urgent { background: var(--rose-pale); color: var(--rose); }
+
+  /* ── NUTRITION SECTION ── */
+  .nutrition-section { margin-top: 4px; }
+
+  .diet-rating-card {}
+  .diet-rating-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .diet-rating-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; color: var(--bark-light); margin-bottom: 4px;
+  }
+  .diet-rating-value {
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 700; color: var(--bark);
+  }
+  .diet-rating-badge {
+    padding: 6px 16px; border-radius: 100px;
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .rating-poor { background: var(--rose-pale); color: var(--rose); }
+  .rating-fair { background: var(--amber-pale); color: var(--amber); }
+  .rating-good { background: var(--sage-pale); color: var(--sage); }
+  .rating-excellent { background: var(--sage-pale); color: var(--sage); border: 2px solid var(--sage); }
+  .diet-assessment-text {
+    font-size: 14px; color: var(--bark-mid); line-height: 1.7;
+  }
+
+  /* ── MECHANISM CARD ── */
+  .mechanism-card { background: var(--bark); color: white; }
+  .mechanism-card .section-tag {
+    background: rgba(255,255,255,0.15); color: white;
+  }
+  .mechanism-text {
+    font-size: 14px; line-height: 1.8; color: rgba(255,255,255,0.85);
+    margin-bottom: 4px;
+  }
+  .mechanism-card .divider { background: rgba(255,255,255,0.15); }
+  .mechanism-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; color: rgba(255,255,255,0.5);
+    margin-bottom: 8px;
+  }
+
+  /* ── TREAT ANALYSIS ── */
+  .treat-text { font-size: 14px; line-height: 1.7; color: var(--bark-mid); }
+
+  /* ── PRIMARY REC CARD ── */
+  .primary-rec-card {
+    background: linear-gradient(135deg, var(--sage) 0%, var(--sage-light) 100%);
+    border-radius: var(--radius-lg);
+    padding: 24px 28px; margin-bottom: 20px;
+    color: white;
+  }
+  .primary-rec-eyebrow {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; opacity: 0.7; margin-bottom: 8px;
+  }
+  .primary-rec-text {
+    font-family: var(--font-display);
+    font-size: 20px; font-weight: 600; line-height: 1.4;
+  }
+
+  /* ── REC LIST UPGRADED ── */
+  .rec-item {
+    border-left: 3px solid var(--sand);
+    padding-left: 14px !important;
+  }
+  .rec-item-header {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 4px;
+  }
+  .rec-item-cat {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; color: var(--bark-light);
+  }
+  .vohc-badge {
+    font-size: 9px; font-weight: 700;
+    background: var(--sage-pale); color: var(--sage);
+    padding: 2px 7px; border-radius: 100px;
+    border: 1px solid var(--sage);
+  }
+  .priority-badge {
+    font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 100px;
+  }
+  .pb-high { background: var(--rose-pale); color: var(--rose); }
+  .pb-medium { background: var(--amber-pale); color: var(--amber); }
+  .pb-low { background: var(--sage-pale); color: var(--sage); }
+  .rec-item-rec { font-size: 14px; color: var(--bark-mid); line-height: 1.5; margin-bottom: 4px; }
+  .rec-item-mechanism {
+    font-size: 12px; color: var(--bark-light);
+    font-style: italic; line-height: 1.4;
+  }
+
+  /* ── INGREDIENT GRID ── */
+  .ingredient-col-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+  @media (max-width: 480px) { .ingredient-col-grid { grid-template-columns: 1fr; } }
+  .ingredient-col-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; margin-bottom: 10px;
+  }
+  .ingredient-col-label.seek { color: var(--sage); }
+  .ingredient-col-label.avoid { color: var(--rose); }
+
+  /* ── ACTION PLAN ── */
+  .action-plan-grid {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
+    margin-top: 8px;
+  }
+  @media (max-width: 480px) { .action-plan-grid { grid-template-columns: 1fr; } }
+  .action-plan-item {
+    background: var(--cream);
+    border-radius: var(--radius-sm);
+    padding: 16px 14px;
+    border-top: 3px solid var(--sage);
+  }
+  .action-plan-day {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; color: var(--sage); margin-bottom: 8px;
+  }
+  .action-plan-text { font-size: 13px; color: var(--bark-mid); line-height: 1.5; }
+
+  /* ── RECHECK CARD ── */
+  .recheck-card {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--amber-pale);
+    border: 1.5px solid rgba(212,131,26,0.25);
+    border-radius: var(--radius);
+    padding: 20px 24px; margin-bottom: 20px;
+  }
+  .recheck-icon { font-size: 28px; flex-shrink: 0; }
+  .recheck-title {
+    font-weight: 700; font-size: 15px; color: var(--bark);
+    margin-bottom: 3px;
+  }
+  .recheck-text { font-size: 13px; color: var(--bark-mid); }
+
 </style>
 </head>
 <body>
@@ -891,78 +1125,189 @@
   <!-- ════════════════════════════════════════════════ -->
   <div class="screen" id="screen4">
 
+    <!-- Action Bar -->
+    <div class="action-bar">
+      <div class="action-bar-dog" id="actionBarDog">Results</div>
+      <div class="action-bar-btns">
+        <button class="action-btn" onclick="downloadPDF()" id="pdfBtn">⬇ Download Report</button>
+        <button class="action-btn action-btn-outline" onclick="startOver()">+ New Scan</button>
+      </div>
+    </div>
+
     <!-- Risk Banner -->
     <div class="risk-banner" id="riskBanner">
+      <div class="risk-emoji" id="riskEmoji">🟢</div>
       <div class="risk-label" id="riskLabel">Screening Result</div>
       <div class="risk-title" id="riskTitle">—</div>
       <div class="risk-summary" id="riskSummary">—</div>
+      <div class="risk-meta" id="riskMeta"></div>
     </div>
 
-    <!-- Score Cards -->
+    <!-- Score Cards — Visual Gauges -->
     <div class="score-grid">
       <div class="score-card">
         <div class="score-card-label">Tartar</div>
-        <div class="score-value" id="tartarScore">—</div>
+        <div class="gauge-wrap">
+          <svg class="gauge" viewBox="0 0 80 80">
+            <circle class="gauge-bg" cx="40" cy="40" r="32"/>
+            <circle class="gauge-fill" id="gaugeT" cx="40" cy="40" r="32" stroke-dasharray="0 201"/>
+          </svg>
+          <div class="gauge-value" id="tartarScore">—</div>
+        </div>
         <div class="score-sublabel" id="tartarLabel">—</div>
+        <div class="score-note" id="tartarNote">—</div>
       </div>
       <div class="score-card">
-        <div class="score-card-label">Gums</div>
-        <div class="score-value" id="gumScore">—</div>
+        <div class="score-card-label">Gum Health</div>
+        <div class="gauge-wrap">
+          <svg class="gauge" viewBox="0 0 80 80">
+            <circle class="gauge-bg" cx="40" cy="40" r="32"/>
+            <circle class="gauge-fill" id="gaugeG" cx="40" cy="40" r="32" stroke-dasharray="0 201"/>
+          </svg>
+          <div class="gauge-value" id="gumScore">—</div>
+        </div>
         <div class="score-sublabel" id="gumLabel">—</div>
+        <div class="score-note" id="gumNote">—</div>
       </div>
       <div class="score-card">
         <div class="score-card-label">Structure</div>
-        <div class="score-value" id="structuralScore">—</div>
+        <div class="gauge-wrap">
+          <svg class="gauge" viewBox="0 0 80 80">
+            <circle class="gauge-bg" cx="40" cy="40" r="32"/>
+            <circle class="gauge-fill" id="gaugeS" cx="40" cy="40" r="32" stroke-dasharray="0 201"/>
+          </svg>
+          <div class="gauge-value" id="structuralScore">—</div>
+        </div>
         <div class="score-sublabel" id="structuralLabel">—</div>
+        <div class="score-note" id="structuralNote">—</div>
       </div>
+    </div>
+
+    <!-- Side by side scores -->
+    <div class="bilateral-card card">
+      <div class="section-tag">📊 Left vs Right Comparison</div>
+      <div class="bilateral-grid">
+        <div class="bilateral-col">
+          <div class="bilateral-label">Right Side</div>
+          <div class="bilateral-row"><span>Tartar</span><span class="bilateral-score" id="tartarRight">—</span></div>
+          <div class="bilateral-row"><span>Gums</span><span class="bilateral-score" id="gumRight">—</span></div>
+        </div>
+        <div class="bilateral-divider"></div>
+        <div class="bilateral-col">
+          <div class="bilateral-label">Left Side</div>
+          <div class="bilateral-row"><span>Tartar</span><span class="bilateral-score" id="tartarLeft">—</span></div>
+          <div class="bilateral-row"><span>Gums</span><span class="bilateral-score" id="gumLeft">—</span></div>
+        </div>
+      </div>
+      <div class="asymmetry-note" id="asymmetryNote" style="display:none"></div>
     </div>
 
     <!-- Key Findings -->
     <div class="card">
       <div class="section-tag">🔍 Key Findings</div>
       <ul class="findings-list" id="findingsList"></ul>
+      <div class="vet-urgency-badge" id="vetUrgencyBadge" style="display:none"></div>
     </div>
 
-    <!-- Nutrition Section -->
-    <div class="card">
-      <div class="section-tag">🥗 Nutrition &amp; Oral Health Recommendations</div>
+    <!-- ── NUTRITION SECTION ── -->
+    <div class="nutrition-section">
 
-      <div class="primary-rec">
-        <div class="primary-rec-label">Most Important Action</div>
+      <!-- Diet Rating Card -->
+      <div class="card diet-rating-card">
+        <div class="section-tag">🥗 Diet &amp; Oral Health Analysis</div>
+        <div class="diet-rating-row">
+          <div>
+            <div class="diet-rating-label">Current Diet Rating</div>
+            <div class="diet-rating-value" id="dietRating">—</div>
+          </div>
+          <div class="diet-rating-badge" id="dietRatingBadge">—</div>
+        </div>
+        <div class="diet-assessment-text" id="dietAssessment"></div>
+      </div>
+
+      <!-- Mechanism Card — the deep insight -->
+      <div class="card mechanism-card">
+        <div class="section-tag">🔬 How Your Dog's Diet Affects Their Teeth</div>
+        <div class="mechanism-text" id="dietMechanism"></div>
+        <div class="divider"></div>
+        <div class="mechanism-label">Oral pH Impact</div>
+        <div class="mechanism-text" id="oralpHImpact"></div>
+      </div>
+
+      <!-- Treat Analysis -->
+      <div class="card">
+        <div class="section-tag">🦴 Treat Analysis</div>
+        <div class="treat-text" id="treatAnalysis"></div>
+      </div>
+
+      <!-- Primary Recommendation -->
+      <div class="primary-rec-card">
+        <div class="primary-rec-eyebrow">Most Important Action Right Now</div>
         <div class="primary-rec-text" id="primaryRec">—</div>
       </div>
 
-      <div id="dietAssessment" style="font-size:14px;color:var(--bark-mid);margin-bottom:16px;line-height:1.6;"></div>
-
-      <div class="rec-list" id="recList"></div>
-
-      <div id="ingredientSection" style="display:none">
-        <div style="font-size:12px;font-weight:700;color:var(--bark-light);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Look for these ingredients</div>
-        <div class="tags-row" id="seekTags"></div>
-        <div style="font-size:12px;font-weight:700;color:var(--bark-light);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px;">Consider reducing</div>
-        <div class="tags-row" id="avoidTags"></div>
+      <!-- Food Recommendations -->
+      <div class="card">
+        <div class="section-tag">🍽 Food &amp; Product Recommendations</div>
+        <div class="rec-list" id="recList"></div>
       </div>
 
-      <div class="divider"></div>
-
-      <div style="font-size:13px;font-weight:700;color:var(--bark-mid);margin-bottom:10px;">Home Care Tips</div>
-      <ul class="findings-list" id="homeCareTips"></ul>
-
-      <div class="positive-note" id="positiveNote"></div>
-
-      <div style="margin-top:16px;">
-        <div class="recheck-badge" id="recheckBadge">📅 Recheck recommended in — days</div>
+      <!-- Ingredients -->
+      <div class="card">
+        <div class="section-tag">🏷 Ingredient Guide</div>
+        <div class="ingredient-col-grid">
+          <div>
+            <div class="ingredient-col-label seek">✅ Look For</div>
+            <div class="tags-row" id="seekTags"></div>
+          </div>
+          <div>
+            <div class="ingredient-col-label avoid">❌ Reduce or Avoid</div>
+            <div class="tags-row" id="avoidTags"></div>
+          </div>
+        </div>
       </div>
-    </div>
+
+      <!-- 30/60/90 Action Plan -->
+      <div class="card">
+        <div class="section-tag">📅 Your Action Plan</div>
+        <div class="action-plan-grid">
+          <div class="action-plan-item">
+            <div class="action-plan-day">Day 30</div>
+            <div class="action-plan-text" id="plan30">—</div>
+          </div>
+          <div class="action-plan-item">
+            <div class="action-plan-day">Day 60</div>
+            <div class="action-plan-text" id="plan60">—</div>
+          </div>
+          <div class="action-plan-item">
+            <div class="action-plan-day">Day 90</div>
+            <div class="action-plan-text" id="plan90">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Home Care -->
+      <div class="card">
+        <div class="section-tag">🪥 Home Care Routine</div>
+        <ul class="findings-list" id="homeCareTips"></ul>
+        <div class="positive-note" id="positiveNote"></div>
+      </div>
+
+      <!-- Recheck -->
+      <div class="recheck-card">
+        <div class="recheck-icon">📅</div>
+        <div>
+          <div class="recheck-title">Schedule Your Next Scan</div>
+          <div class="recheck-text" id="recheckText">Recheck recommended in 60 days</div>
+        </div>
+      </div>
+
+    </div><!-- /nutrition-section -->
 
     <!-- Disclaimer -->
     <div class="disclaimer">
-      <strong>Important:</strong> DentalPaw is a wellness screening tool, not a veterinary diagnostic service. Results are based on visible surfaces only — subgingival disease, periodontal pockets, and root health cannot be assessed from photographs. Any non-green result should be discussed with your veterinarian. This tool does not replace professional veterinary care.
+      <strong>Screening tool only.</strong> DentalPaw analyses visible tooth surfaces from photographs. Subgingival disease, periodontal pockets, and root health cannot be assessed from photos. Any orange or red result should be discussed with your veterinarian promptly. This tool does not replace professional veterinary care.
     </div>
-
-    <button class="btn btn-outline" onclick="startOver()" style="margin-top:16px;">
-      🔄 Screen Another Dog
-    </button>
 
   </div><!-- /screen4 -->
 
@@ -1199,112 +1544,357 @@ async function runAnalysis() {
   }
 }
 
-// ── SCORE LABELS ───────────────────────────────────────────────────────────────
-const TARTAR_LABELS = ['None','Mild','Moderate','Severe'];
-const GUM_LABELS    = ['Healthy','Mild Gingivitis','Moderate Gingivitis','Severe'];
-const STRUCT_LABELS = ['Intact','Minor Wear','Moderate','Severe'];
-const RISK_TITLES   = { GREEN:'Looking Good!', YELLOW:'Worth Monitoring', ORANGE:'Needs Attention', RED:'See Your Vet Soon' };
-const RISK_LABELS   = { GREEN:'Healthy — Keep it up', YELLOW:'Mild Concern', ORANGE:'Moderate Concern', RED:'Urgent Concern' };
+// ── CONSTANTS ──────────────────────────────────────────────────────────────────
+const TARTAR_LABELS  = ['None','Mild','Moderate','Severe'];
+const GUM_LABELS     = ['Healthy','Mild Gingivitis','Moderate','Severe'];
+const STRUCT_LABELS  = ['Intact','Minor','Moderate','Severe'];
+const RISK_TITLES    = { GREEN:'Looking Good!', YELLOW:'Worth Monitoring', ORANGE:'Needs Attention', RED:'See Your Vet Soon' };
+const RISK_LABELS    = { GREEN:'Healthy', YELLOW:'Mild Concern', ORANGE:'Moderate Concern', RED:'Urgent Concern' };
+const RISK_EMOJIS    = { GREEN:'🟢', YELLOW:'🟡', ORANGE:'🟠', RED:'🔴' };
+const GAUGE_COLORS   = { 0:'#4A7C59', 1:'#B8960A', 2:'#D4831A', 3:'#C0392B' };
+const URGENCY_LABELS = { routine:'✓ Routine vet visit at next scheduled appointment', soon:'📋 Schedule a vet dental exam within 6 months', prompt:'⚠️ Vet dental exam recommended within 1-2 months', urgent:'🚨 Veterinary attention needed soon' };
+const URGENCY_CLASSES = { routine:'urgency-routine', soon:'urgency-soon', prompt:'urgency-prompt', urgent:'urgency-urgent' };
+const RATING_CLASSES = { poor:'rating-poor', fair:'rating-fair', good:'rating-good', excellent:'rating-excellent' };
+
+// Global result store for PDF
+let lastResult = null;
+let lastProfile = null;
+
+// ── GAUGE HELPER ───────────────────────────────────────────────────────────────
+function setGauge(gaugeId, score) {
+  const circumference = 2 * Math.PI * 32; // r=32
+  const pct = score / 3;
+  const dash = circumference * pct;
+  const el = document.getElementById(gaugeId);
+  if (!el) return;
+  el.style.strokeDasharray = `${dash} ${circumference}`;
+  el.style.stroke = GAUGE_COLORS[score] || GAUGE_COLORS[0];
+}
+
+function scoreColor(score) {
+  return GAUGE_COLORS[score] || GAUGE_COLORS[0];
+}
 
 // ── RENDER RESULTS ─────────────────────────────────────────────────────────────
 function renderResults(result, profile) {
+  lastResult = result;
+  lastProfile = profile;
   const { dental, nutrition } = result;
+
+  // Action bar
+  document.getElementById('actionBarDog').textContent =
+    profile.name && profile.name !== 'Your dog' ? `${profile.name}'s Report` : 'Dental Report';
 
   // Risk banner
   const risk = dental.overall_risk || 'GREEN';
   const banner = document.getElementById('riskBanner');
   banner.className = `risk-banner ${risk}`;
+  document.getElementById('riskEmoji').textContent = RISK_EMOJIS[risk];
   document.getElementById('riskLabel').textContent = RISK_LABELS[risk];
   document.getElementById('riskTitle').textContent = RISK_TITLES[risk];
   document.getElementById('riskSummary').textContent = dental.owner_summary || '';
+  document.getElementById('riskMeta').textContent =
+    `Composite score: ${dental.composite_score ?? '—'}/9 · Analysed ${new Date().toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'})}`;
 
-  // Scores
+  // Scores + gauges
   const tc = dental.tartar?.composite ?? 0;
   const gc = dental.gingival?.composite ?? 0;
   const sc = dental.structural?.score ?? 0;
 
-  setScore('tartarScore', 'tartarLabel', tc, TARTAR_LABELS);
-  setScore('gumScore', 'gumLabel', gc, GUM_LABELS);
-  setScore('structuralScore', 'structuralLabel', sc, STRUCT_LABELS);
+  setGauge('gaugeT', tc); setGauge('gaugeG', gc); setGauge('gaugeS', sc);
+
+  setText('tartarScore', tc, scoreColor(tc));
+  setText('gumScore',    gc, scoreColor(gc));
+  setText('structuralScore', sc, scoreColor(sc));
+
+  document.getElementById('tartarLabel').textContent    = TARTAR_LABELS[tc] || '—';
+  document.getElementById('gumLabel').textContent       = GUM_LABELS[gc] || '—';
+  document.getElementById('structuralLabel').textContent = STRUCT_LABELS[sc] || '—';
+  document.getElementById('tartarNote').textContent    = dental.tartar?.notes || '';
+  document.getElementById('gumNote').textContent       = dental.gingival?.notes || '';
+  document.getElementById('structuralNote').textContent = dental.structural?.notes || '';
+
+  // Bilateral comparison
+  const tr = dental.tartar?.right ?? 0;  const tl = dental.tartar?.left ?? 0;
+  const gr = dental.gingival?.right ?? 0; const gl = dental.gingival?.left ?? 0;
+  setText('tartarRight', tr, scoreColor(tr)); setText('tartarLeft', tl, scoreColor(tl));
+  setText('gumRight',    gr, scoreColor(gr)); setText('gumLeft',    gl, scoreColor(gl));
+
+  // Asymmetry detection
+  const asymNote = document.getElementById('asymmetryNote');
+  if (Math.abs(tr - tl) >= 2 || Math.abs(gr - gl) >= 2) {
+    asymNote.style.display = 'block';
+    asymNote.textContent = '⚠ Notable difference between left and right sides detected. Asymmetric disease can indicate a localised problem — worth mentioning to your vet.';
+  } else {
+    asymNote.style.display = 'none';
+  }
 
   // Findings
   const findingsList = document.getElementById('findingsList');
   findingsList.innerHTML = '';
   const findings = dental.key_findings || [];
-  if (findings.length === 0) {
+  if (!findings.length) {
     findingsList.innerHTML = '<li class="finding-item"><span class="fi-icon">✅</span> No significant issues detected in the photos provided.</li>';
   } else {
     findings.forEach(f => {
       const li = document.createElement('li');
       li.className = 'finding-item';
-      li.innerHTML = `<span class="fi-icon">•</span> ${escHtml(f)}`;
+      li.innerHTML = `<span class="fi-icon">→</span> ${escHtml(f)}`;
       findingsList.appendChild(li);
     });
   }
 
-  // Nutrition
-  document.getElementById('primaryRec').textContent = nutrition.primary_recommendation || '—';
+  // Vet urgency
+  const urgency = dental.vet_urgency || 'routine';
+  const badge = document.getElementById('vetUrgencyBadge');
+  if (urgency !== 'routine' || risk !== 'GREEN') {
+    badge.style.display = 'inline-flex';
+    badge.className = `vet-urgency-badge ${URGENCY_CLASSES[urgency] || 'urgency-routine'}`;
+    badge.textContent = URGENCY_LABELS[urgency] || URGENCY_LABELS.routine;
+  }
+
+  // Diet rating
+  const rating = (nutrition.diet_oral_health_rating || 'fair').toLowerCase();
+  document.getElementById('dietRating').textContent = rating.charAt(0).toUpperCase() + rating.slice(1);
+  const ratingBadge = document.getElementById('dietRatingBadge');
+  ratingBadge.textContent = rating.toUpperCase();
+  ratingBadge.className = `diet-rating-badge ${RATING_CLASSES[rating] || 'rating-fair'}`;
   document.getElementById('dietAssessment').textContent = nutrition.diet_assessment || '';
 
+  // Mechanism — the deep science
+  document.getElementById('dietMechanism').textContent = nutrition.diet_mechanism || '';
+  document.getElementById('oralpHImpact').textContent  = nutrition.oral_ph_impact || '';
+  document.getElementById('treatAnalysis').textContent = nutrition.treat_analysis || '';
+
+  // Primary recommendation
+  document.getElementById('primaryRec').textContent = nutrition.primary_recommendation || '—';
+
+  // Food recommendations
   const recList = document.getElementById('recList');
   recList.innerHTML = '';
   (nutrition.food_recommendations || []).forEach(rec => {
     const div = document.createElement('div');
-    div.className = 'rec-item';
-    div.innerHTML = `
-      <div class="rec-item-priority priority-${rec.priority || 'medium'}"></div>
-      <div>
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--bark-light);letter-spacing:0.5px;margin-bottom:3px;">${escHtml(rec.category || '')}${rec.vohc_approved ? ' · <span style="color:var(--sage)">VOHC ✓</span>' : ''}</div>
-        ${escHtml(rec.recommendation || '')}
-      </div>`;
+    div.className = 'rec-item finding-item';
+    div.style.flexDirection = 'column';
+    div.style.alignItems = 'flex-start';
+    div.style.borderLeft = `3px solid ${rec.priority === 'high' ? 'var(--rose)' : rec.priority === 'medium' ? 'var(--amber)' : 'var(--sage)'}`;
+    div.innerHTML =
+      `<div class="rec-item-header">
+        <span class="rec-item-cat">${escHtml(rec.category || '')}</span>
+        ${rec.vohc_approved ? '<span class="vohc-badge">VOHC ✓</span>' : ''}
+        <span class="priority-badge pb-${rec.priority || 'medium'}">${(rec.priority || 'medium').toUpperCase()}</span>
+      </div>
+      <div class="rec-item-rec">${escHtml(rec.recommendation || '')}</div>
+      ${rec.mechanism ? `<div class="rec-item-mechanism">Why: ${escHtml(rec.mechanism)}</div>` : ''}`;
     recList.appendChild(div);
   });
 
-  // Seek/Avoid tags
+  // Ingredients
   const seek = nutrition.ingredients_to_seek || [];
   const avoid = nutrition.ingredients_to_avoid || [];
-  if (seek.length > 0 || avoid.length > 0) {
-    document.getElementById('ingredientSection').style.display = 'block';
-    document.getElementById('seekTags').innerHTML = seek.map(s => `<span class="tag tag-seek">+ ${escHtml(s)}</span>`).join('');
-    document.getElementById('avoidTags').innerHTML = avoid.map(s => `<span class="tag tag-avoid">− ${escHtml(s)}</span>`).join('');
-  }
+  document.getElementById('seekTags').innerHTML  = seek.map(s => `<span class="tag tag-seek">+ ${escHtml(s)}</span>`).join('');
+  document.getElementById('avoidTags').innerHTML = avoid.map(s => `<span class="tag tag-avoid">− ${escHtml(s)}</span>`).join('');
 
-  // Home care tips
-  const homeCareTips = document.getElementById('homeCareTips');
-  homeCareTips.innerHTML = '';
+  // Action plan
+  const ap = nutrition.action_plan || {};
+  document.getElementById('plan30').textContent = ap.day_30 || 'Begin recommended dietary changes';
+  document.getElementById('plan60').textContent = ap.day_60 || 'Assess improvement and adjust';
+  document.getElementById('plan90').textContent = ap.day_90 || 'Rescan with DentalPaw';
+
+  // Home care
+  const hct = document.getElementById('homeCareTips');
+  hct.innerHTML = '';
   (nutrition.home_care_tips || []).forEach(tip => {
     const li = document.createElement('li');
     li.className = 'finding-item';
     li.innerHTML = `<span class="fi-icon">→</span> ${escHtml(tip)}`;
-    homeCareTips.appendChild(li);
+    hct.appendChild(li);
   });
-
-  // Positive note
   document.getElementById('positiveNote').textContent = nutrition.positive_note || '';
 
   // Recheck
-  const days = nutrition.recheck_days || 90;
-  document.getElementById('recheckBadge').textContent = `📅 Recheck recommended in ${days} days`;
+  const days = nutrition.recheck_days || 60;
+  document.getElementById('recheckText').textContent = `Recheck recommended in ${days} days — ${new Date(Date.now() + days * 86400000).toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'})}`;
 
-  // Show results
+  // Show screen
   document.getElementById('loadingScreen').classList.remove('active');
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen4').classList.add('active');
   document.getElementById('progressFill').style.width = '100%';
   for (let i = 1; i <= 4; i++) {
-    const dot = document.getElementById(`dot${i}`);
-    dot.classList.remove('active');
-    dot.classList.add('complete');
+    document.getElementById(`dot${i}`).classList.remove('active');
+    document.getElementById(`dot${i}`).classList.add('complete');
   }
-
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function setText(id, value, color) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = value;
+  if (color) el.style.color = color;
+}
+
 function setScore(valueId, labelId, score, labels) {
-  const el = document.getElementById(valueId);
-  el.textContent = score;
-  el.className = `score-value score-${score}`;
+  setText(valueId, score, scoreColor(score));
   document.getElementById(labelId).textContent = labels[score] || '—';
+}
+
+// ── PDF DOWNLOAD ───────────────────────────────────────────────────────────────
+async function downloadPDF() {
+  const btn = document.getElementById('pdfBtn');
+  btn.textContent = '⏳ Generating…';
+  btn.disabled = true;
+
+  try {
+    const { dental, nutrition } = lastResult;
+    const profile = lastProfile;
+    const risk = dental.overall_risk || 'GREEN';
+    const riskColors = { GREEN:'#4A7C59', YELLOW:'#B8960A', ORANGE:'#D4831A', RED:'#C0392B' };
+    const col = riskColors[risk];
+    const date = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    const dogName = profile.name && profile.name !== 'Your dog' ? profile.name : 'Your Dog';
+
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<style>
+  body { font-family: Georgia, serif; color: #2C1810; margin: 0; padding: 32px; font-size: 13px; line-height: 1.6; }
+  .header { border-bottom: 3px solid ${col}; padding-bottom: 20px; margin-bottom: 24px; }
+  .logo { font-size: 24px; font-weight: 700; color: #2C1810; letter-spacing: -0.5px; }
+  .logo span { color: ${col}; }
+  .date { font-size: 11px; color: #8B6355; margin-top: 4px; }
+  h1 { font-size: 28px; margin: 16px 0 4px; color: ${col}; }
+  h2 { font-size: 15px; font-weight: 700; color: #2C1810; border-bottom: 1px solid #E8DDD0; padding-bottom: 6px; margin: 24px 0 12px; }
+  .risk-box { background: ${col}18; border: 2px solid ${col}; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; }
+  .risk-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: ${col}; }
+  .risk-title { font-size: 22px; font-weight: 700; color: ${col}; margin: 4px 0; }
+  .risk-summary { font-size: 13px; color: #5C3D2E; }
+  .scores { display: flex; gap: 12px; margin-bottom: 20px; }
+  .score-box { flex: 1; background: #FAF7F2; border-radius: 8px; padding: 12px; text-align: center; border: 1px solid #E8DDD0; }
+  .score-num { font-size: 28px; font-weight: 700; font-family: Georgia; }
+  .score-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: #8B6355; margin-bottom: 4px; }
+  .score-sub { font-size: 11px; color: #8B6355; }
+  .finding { padding: 7px 0; border-bottom: 1px solid #E8DDD0; font-size: 13px; }
+  .finding:last-child { border-bottom: none; }
+  .primary-rec { background: ${col}; color: white; border-radius: 8px; padding: 14px 18px; margin: 12px 0; }
+  .primary-rec .eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.7; margin-bottom: 4px; }
+  .primary-rec .text { font-size: 15px; font-weight: 600; }
+  .mechanism-box { background: #2C1810; color: rgba(255,255,255,0.85); border-radius: 8px; padding: 14px 18px; margin: 12px 0; font-size: 13px; line-height: 1.7; }
+  .mechanism-box .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.5; margin-bottom: 6px; }
+  .plan { display: flex; gap: 10px; margin: 12px 0; }
+  .plan-item { flex: 1; background: #FAF7F2; border-top: 3px solid #4A7C59; border-radius: 6px; padding: 12px 10px; }
+  .plan-day { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #4A7C59; margin-bottom: 6px; }
+  .plan-text { font-size: 12px; color: #5C3D2E; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .tag-seek { background: #E8F2EB; color: #4A7C59; padding: 3px 10px; border-radius: 100px; font-size: 11px; }
+  .tag-avoid { background: #FDECEA; color: #C0392B; padding: 3px 10px; border-radius: 100px; font-size: 11px; }
+  .disclaimer { font-size: 11px; color: #8B6355; border-top: 1px solid #E8DDD0; padding-top: 14px; margin-top: 24px; }
+  .two-col { display: flex; gap: 20px; }
+  .two-col > div { flex: 1; }
+</style></head><body>
+
+<div class="header">
+  <div class="logo">Dental<span>Paw</span></div>
+  <div class="date">Report generated ${date}</div>
+</div>
+
+<h1>${dogName}'s Dental Report</h1>
+<p style="color:#8B6355;margin:0 0 16px">${profile.breed || ''} · ${profile.age || ''}yrs · ${profile.sex || ''} · Currently eating: ${profile.currentFood || 'not specified'}</p>
+
+<div class="risk-box">
+  <div class="risk-label">${RISK_LABELS[risk]}</div>
+  <div class="risk-title">${RISK_TITLES[risk]}</div>
+  <div class="risk-summary">${dental.owner_summary || ''}</div>
+</div>
+
+<h2>Dental Scores</h2>
+<div class="scores">
+  <div class="score-box">
+    <div class="score-lbl">Tartar</div>
+    <div class="score-num" style="color:${GAUGE_COLORS[dental.tartar?.composite??0]}">${dental.tartar?.composite ?? 0}/3</div>
+    <div class="score-sub">${TARTAR_LABELS[dental.tartar?.composite??0]}</div>
+  </div>
+  <div class="score-box">
+    <div class="score-lbl">Gum Health</div>
+    <div class="score-num" style="color:${GAUGE_COLORS[dental.gingival?.composite??0]}">${dental.gingival?.composite ?? 0}/3</div>
+    <div class="score-sub">${GUM_LABELS[dental.gingival?.composite??0]}</div>
+  </div>
+  <div class="score-box">
+    <div class="score-lbl">Structure</div>
+    <div class="score-num" style="color:${GAUGE_COLORS[dental.structural?.score??0]}">${dental.structural?.score ?? 0}/3</div>
+    <div class="score-sub">${STRUCT_LABELS[dental.structural?.score??0]}</div>
+  </div>
+  <div class="score-box">
+    <div class="score-lbl">Composite</div>
+    <div class="score-num" style="color:${col}">${dental.composite_score ?? 0}/9</div>
+    <div class="score-sub">${risk}</div>
+  </div>
+</div>
+
+<h2>Key Findings</h2>
+${(dental.key_findings || []).map(f => `<div class="finding">→ ${f}</div>`).join('')}
+
+<h2>Nutrition &amp; Diet Analysis</h2>
+<p><strong>Diet oral health rating:</strong> ${nutrition.diet_oral_health_rating || '—'}</p>
+<p>${nutrition.diet_assessment || ''}</p>
+
+<div class="mechanism-box">
+  <div class="lbl">How This Diet Affects Your Dog's Teeth</div>
+  ${nutrition.diet_mechanism || ''}
+</div>
+
+<div class="primary-rec">
+  <div class="eyebrow">Most Important Action Right Now</div>
+  <div class="text">${nutrition.primary_recommendation || ''}</div>
+</div>
+
+<h2>Treat Analysis</h2>
+<p>${nutrition.treat_analysis || ''}</p>
+
+<h2>Food Recommendations</h2>
+${(nutrition.food_recommendations || []).map(r =>
+  `<div class="finding"><strong>${r.category}${r.vohc_approved ? ' · VOHC ✓' : ''} [${r.priority}]</strong><br>${r.recommendation}${r.mechanism ? `<br><em style="color:#8B6355">Why: ${r.mechanism}</em>` : ''}</div>`
+).join('')}
+
+<h2>Ingredient Guide</h2>
+<div class="two-col">
+  <div><strong style="color:#4A7C59">✅ Look For</strong><div class="tags">${(nutrition.ingredients_to_seek||[]).map(s=>`<span class="tag-seek">${s}</span>`).join('')}</div></div>
+  <div><strong style="color:#C0392B">❌ Reduce</strong><div class="tags">${(nutrition.ingredients_to_avoid||[]).map(s=>`<span class="tag-avoid">${s}</span>`).join('')}</div></div>
+</div>
+
+<h2>Your 30/60/90 Day Action Plan</h2>
+<div class="plan">
+  <div class="plan-item"><div class="plan-day">Day 30</div><div class="plan-text">${nutrition.action_plan?.day_30 || ''}</div></div>
+  <div class="plan-item"><div class="plan-day">Day 60</div><div class="plan-text">${nutrition.action_plan?.day_60 || ''}</div></div>
+  <div class="plan-item"><div class="plan-day">Day 90</div><div class="plan-text">${nutrition.action_plan?.day_90 || ''}</div></div>
+</div>
+
+<h2>Home Care Routine</h2>
+${(nutrition.home_care_tips || []).map(t => `<div class="finding">→ ${t}</div>`).join('')}
+<p style="color:#4A7C59;font-style:italic;margin-top:12px">${nutrition.positive_note || ''}</p>
+
+<div class="disclaimer">
+  <strong>Important:</strong> DentalPaw is a wellness screening tool, not a veterinary diagnostic service. Results are based on visible tooth surfaces only. Subgingival disease, periodontal pockets, and root health cannot be assessed from photographs. Any orange or red result should be discussed with your veterinarian. Recheck recommended in ${nutrition.recheck_days || 60} days.
+</div>
+
+</body></html>`;
+
+    // Open print dialog — browser saves as PDF
+    const win = window.open('', '_blank');
+    win.document.write(html);
+    win.document.close();
+    win.onload = () => {
+      setTimeout(() => {
+        win.print();
+      }, 500);
+    };
+
+  } catch(err) {
+    console.error('PDF error:', err);
+    alert('Could not generate report. Please try again.');
+  }
+
+  btn.textContent = '⬇ Download Report';
+  btn.disabled = false;
 }
 
 function escHtml(str) {
