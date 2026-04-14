@@ -50,31 +50,25 @@ Never state specific diagnoses. Be a screener, not a diagnostician.
 Respond with ONLY a raw JSON object. Start with { end with }. No markdown.`;
 
 // ── NUTRITION SYSTEM PROMPT ────────────────────────────────────────────────
-const NUTRITION_SYSTEM_PROMPT = `You are writing the nutrition section of a canine dental health report for NOBL Dental Tracker. Voice: knowledgeable vet friend — warm, plain language, never preachy. Always use the dog's name. Never give orders; suggest and invite.
+const NUTRITION_SYSTEM_PROMPT = `Canine dental nutrition analyst for NOBL Dental Tracker. Warm vet-friend voice. Plain language. Always use dog's name. Suggest, never order.
 
-TONE BY RISK: GREEN=cheerful; YELLOW=gentle nudge; ORANGE=clear and caring; RED=warm but firm.
-GOAL: Inform, not judge. No scores or ratings.
+TONE BY RISK: GREEN=encouraging; YELLOW=gentle nudge; ORANGE=caring urgency; RED=warm but firm.
 
-SCIENCE TO APPLY:
-- Carbs → oral acid within minutes (pH <5.5 = enamel damage). Free feeding = constant acid.
-- Animal protein supports gum collagen. Soft/glycerin treats feed bacteria directly.
-- HMP (sodium hexametaphosphate) chelates calcium → prevents calculus. VOHC-accepted.
-- Ascophyllum nodosum (kelp) = VOHC-accepted plaque/tartar reduction.
-- Small breeds: all factors amplified due to tooth crowding.
+KEY SCIENCE:
+- Carbs → oral acid (pH<5.5) within minutes. Free feeding = constant acid attack.
+- Soft/glycerin treats feed bacteria. HMP prevents calculus. Kelp (Ascophyllum nodosum) = VOHC plaque reduction.
+- Small breeds: all factors amplified.
 
-FORMAT GUIDANCE for format_callout and format_risk_flags:
-DRY KIBBLE: callout=mechanical abrasion benefit but many dogs swallow whole; VOHC dental kibbles worth considering; tailor to disease stage. flags="".
-WET/CANNED: callout=soft texture means little mechanical cleaning; brushing and dental chews become critical. flags="".
-RAW: callout=chewing action helps surface plaque but doesn't guarantee clean teeth; nutritional completeness matters. flags=hard bones risk slab fractures of carnassial tooth; AAHA/AVMA advise caution re bacterial contamination.
-FREEZE-DRIED: callout=rehydrated = behaves like wet food dentally; dry pieces too small for meaningful abrasion; check AAFCO compliance. flags=nutritional completeness varies widely; deficiencies affect gum healing.
-HOME COOKED: callout=soft texture = little mechanical cleaning; brushing critical; nutritional completeness is the bigger concern — recommend veterinary nutritionist or BalanceIT. flags=deficiencies in vitamins A/D/E/B-complex worsen gum disease and slow post-procedure healing; Ca/P imbalance affects tooth structure.
-MIXED KIBBLE+WET: callout=dental picture between the two formats; kibble ratio matters; VOHC dental chew recommended to supplement. flags="".
-PRESCRIPTION DIET: callout=context-dependent — if dental Rx diet (Hill's t/d etc) that's a genuine asset with VOHC acceptance; if for other condition, loop in prescribing vet for dental home care advice. flags="".
+FORMAT RULES (apply to format_callout + format_risk_flags by dietType):
+- dry kibble: some mechanical abrasion, but most dogs swallow whole; VOHC dental kibble worth considering; flags=""
+- wet/canned: soft=little cleaning; brushing critical; flags=""
+- raw diet: chewing helps surface plaque; nutritional balance matters; flags=hard bones cause slab fractures; AAHA/AVMA caution re bacteria
+- freeze-dried: rehydrated=acts like wet; check AAFCO compliance; flags=nutritional completeness varies
+- home cooked: soft=little cleaning; vet nutritionist referral key; flags=vitamin A/D/E/B deficiencies worsen gum disease
+- mixed kibble and wet: between both formats; VOHC chew recommended; flags=""
+- prescription diet: context-dependent; loop in prescribing vet; flags=""
 
-Return ONLY this JSON, no markdown:
-{"diet_assessment":"","diet_mechanism":"","format_callout":"","format_risk_flags":"","treat_analysis":"","oral_ph_impact":"","primary_recommendation":"","food_recommendations":[{"category":"","recommendation":"","priority":"medium","vohc_approved":false,"mechanism":""}],"home_care_tips":[""],"action_plan_intro":"","action_plan":{"day_30":"","day_60":"","day_90":""},"recheck_days":60,"positive_note":""}
-
-FIELD LENGTHS: diet_assessment=2-3 sentences. diet_mechanism=1-2 sentences. format_callout=3-4 sentences. format_risk_flags=2 sentences or "". treat_analysis=2-3 sentences. oral_ph_impact=2 sentences. primary_recommendation=1 sentence. food_recommendations=2-3 items. home_care_tips=3 items. action_plan each field=1-2 sentences. positive_note=1 sentence.`;
+Respond ONLY with raw JSON. No markdown, no extra text.`;
 
 async function callClaude(systemPrompt, messages, maxTokens) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -237,7 +231,7 @@ Return JSON:
 
     let dental = fallbackDental();
     try {
-      const text = await callClaude(DENTAL_SYSTEM_PROMPT, [{ role: "user", content }], 1000);
+      const text = await callClaude(DENTAL_SYSTEM_PROMPT, [{ role: "user", content }], 800);
       dental = extractJSON(text);
       console.log("Dental OK:", dental.overall_risk);
     } catch(e) { console.error("Dental error:", e.message); }
@@ -260,30 +254,21 @@ Return JSON:
     // CHANGED: Added format_callout and format_risk_flags to the JSON schema.
     // CHANGED: Increased max_tokens to 1600 to accommodate the new fields.
     const nutritionPrompt =
-`DOG NAME: ${dogName}
-BREED: ${breed} | AGE: ${age}yrs | SEX: ${sex}${weight ? " | " + weight + "lbs" : ""}
-FLAGS: ${flags.length > 0 ? flags.join("; ") : "none"}
-DENTAL FINDINGS: Overall risk ${dentalResults.overall_risk}, composite ${dentalResults.composite_score}/9
-Tartar: ${dentalResults.tartar?.composite}/3, Gums: ${dentalResults.gingival?.composite}/3, Structure: ${dentalResults.structural?.score}/3
-Key findings: ${(dentalResults.key_findings || []).join("; ")}
-
-DIET: ${currentFood} (${dietType}) | Est. carbs: ~${dietData.carb_pct}% | Fermentation: ${dietData.fermentation} | Moisture: ~${dietData.moisture}%
-Protein source: ${proteinSource || "unknown"}
-Feeding schedule: ${feedingSchedule || "unknown"}
-Treats: ${treats || "none"} | Frequency: ${treatFrequency || "unknown"}
-Home care: ${homeCare || "none"}
-Body condition: ${bodyCondition || "unknown"}
-Last cleaning: ${lastCleaning || "unknown"}
-Symptoms: ${symptoms?.length > 0 ? symptoms.join(", ") : "none"}
-
-Write the nutrition analysis in the warm veterinary friend tone. Use ${dogName}'s name throughout. The goal is to inform, not to judge food choices.
+`DOG: ${dogName}, ${breed}, ${age}yrs, ${sex}${weight ? ", " + weight + "lbs" : ""}${flags.length > 0 ? " | " + flags.join("; ") : ""}
+DENTAL: risk=${dentalResults.overall_risk}, tartar=${dentalResults.tartar?.composite}/3, gums=${dentalResults.gingival?.composite}/3, structure=${dentalResults.structural?.score}/3
+DIET: ${currentFood} (${dietType}) | protein=${proteinSource || "unknown"} | schedule=${feedingSchedule || "unknown"}
+TREATS: ${treats || "none"} | frequency=${treatFrequency || "unknown"}
+HOME CARE: ${homeCare || "none"} | last cleaning=${lastCleaning || "unknown"} | body condition=${bodyCondition || "unknown"}
+SYMPTOMS: ${symptoms?.length > 0 ? symptoms.join(", ") : "none"}
 
 Return JSON:
-{"diet_assessment":"","diet_mechanism":"","format_callout":"","format_risk_flags":"","treat_analysis":"","oral_ph_impact":"","primary_recommendation":"","food_recommendations":[{"category":"","recommendation":"","priority":"medium","vohc_approved":false,"mechanism":""}],"home_care_tips":[""],"action_plan_intro":"","action_plan":{"day_30":"","day_60":"","day_90":""},"recheck_days":60,"positive_note":""}`;
+{"diet_assessment":"","diet_mechanism":"","format_callout":"","format_risk_flags":"","treat_analysis":"","oral_ph_impact":"","primary_recommendation":"","food_recommendations":[{"category":"","recommendation":"","priority":"medium","vohc_approved":false,"mechanism":""}],"home_care_tips":[""],"action_plan_intro":"","action_plan":{"day_30":"","day_60":"","day_90":""},"recheck_days":60,"positive_note":""}
+
+Keep all text fields concise. diet_assessment/treat_analysis/oral_ph_impact=2 sentences max. format_callout=3 sentences. primary_recommendation=1 sentence. home_care_tips=3 items. action_plan fields=1 sentence each. positive_note=1 sentence.`;
 
     let nutrition = fallbackNutrition(dogName, dietType);
     try {
-      const text = await callClaude(NUTRITION_SYSTEM_PROMPT, [{ role: "user", content: nutritionPrompt }], 2500);
+      const text = await callClaude(NUTRITION_SYSTEM_PROMPT, [{ role: "user", content: nutritionPrompt }], 800);
       nutrition = extractJSON(text);
       console.log("Nutrition OK");
     } catch(e) {
