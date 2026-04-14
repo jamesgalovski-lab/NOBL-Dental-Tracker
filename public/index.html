@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -7,11 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<!-- Uploadcare File Uploader -->
-
-
-
 
 <style>
   /* ── TOKENS ── */
@@ -40,7 +36,6 @@
     --radius-lg: 24px;
   }
 
-  /* ── RESET ── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
@@ -51,10 +46,8 @@
     min-height: 100vh;
   }
 
-  /* ── LAYOUT ── */
   .app { max-width: 720px; margin: 0 auto; padding: 0 20px 60px; }
 
-  /* ── HEADER ── */
   .header {
     text-align: center;
     padding: 48px 0 32px;
@@ -90,7 +83,6 @@
     font-weight: 300;
   }
 
-  /* ── STEP INDICATOR ── */
   .steps {
     display: flex;
     align-items: center;
@@ -120,7 +112,6 @@
   }
   .step-line.complete { background: var(--sage); }
 
-  /* ── CARDS ── */
   .card {
     background: var(--warm-white);
     border-radius: var(--radius-lg);
@@ -143,7 +134,6 @@
     line-height: 1.5;
   }
 
-  /* ── FORM ELEMENTS ── */
   .field { margin-bottom: 20px; }
   .field label {
     display: block;
@@ -185,7 +175,49 @@
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
 
-  /* ── CHECKBOX GROUP ── */
+  /* ── BREED AUTOCOMPLETE ── */
+  .breed-wrap { position: relative; }
+  .breed-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: var(--warm-white);
+    border: 1.5px solid var(--sage);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 8px 24px var(--shadow-md);
+    list-style: none;
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 100;
+    padding: 4px 0;
+  }
+  .breed-dropdown.open { display: block; }
+  .breed-dropdown li {
+    padding: 10px 16px;
+    font-size: 14px;
+    color: var(--bark-mid);
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .breed-dropdown li:hover,
+  .breed-dropdown li.kbd-active {
+    background: var(--sage-pale);
+    color: var(--sage);
+    font-weight: 600;
+  }
+  .breed-dropdown li mark {
+    background: none;
+    color: var(--sage);
+    font-weight: 700;
+  }
+  .breed-no-results {
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--bark-light);
+    font-style: italic;
+  }
+
   .check-group {
     display: flex; flex-wrap: wrap; gap: 8px;
     margin-top: 4px;
@@ -212,7 +244,6 @@
     font-weight: 600;
   }
 
-  /* ── PHOTO UPLOAD SECTION ── */
   .photo-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -308,7 +339,6 @@
   }
   .optional-hint strong { color: var(--amber); }
 
-  /* ── PHOTO GUIDE ── */
   .photo-guide {
     background: var(--sage-pale);
     border-radius: var(--radius-sm);
@@ -325,7 +355,6 @@
     line-height: 1.8;
   }
 
-  /* ── BUTTONS ── */
   .btn {
     display: block; width: 100%;
     padding: 16px 24px;
@@ -351,7 +380,6 @@
   .btn-sage { background: var(--sage); }
   .btn-sage:hover { background: var(--sage-light); }
 
-  /* ── LOADING ── */
   .loading-screen {
     display: none;
     text-align: center;
@@ -400,7 +428,6 @@
     opacity: 0.7;
     background: var(--sand);
     color: var(--bark-light);
-    text-decoration: none;
   }
   .loading-step.done::after {
     content: ' ✓';
@@ -408,7 +435,6 @@
     font-weight: 700;
   }
 
-  /* ── RESULTS ── */
   .results-screen { display: none; }
   .results-screen.active { display: block; }
 
@@ -446,7 +472,6 @@
   .risk-banner.RED .risk-title { color: var(--rose); }
   .risk-summary { font-size: 15px; color: var(--bark-mid); line-height: 1.6; }
 
-  /* Score grid */
   .score-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
     margin-bottom: 20px;
@@ -469,13 +494,8 @@
     font-size: 36px; font-weight: 700; line-height: 1;
     margin-bottom: 4px;
   }
-  .score-0 { color: var(--sage); }
-  .score-1 { color: #B8960A; }
-  .score-2 { color: var(--amber); }
-  .score-3 { color: var(--rose); }
   .score-sublabel { font-size: 11px; color: var(--bark-light); }
 
-  /* Findings */
   .findings-list {
     list-style: none;
     display: flex; flex-direction: column; gap: 8px;
@@ -491,11 +511,6 @@
   }
   .finding-item .fi-icon { flex-shrink: 0; margin-top: 1px; }
 
-  /* Nutrition section */
-  .nutrition-header {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 6px;
-  }
   .section-tag {
     display: inline-flex; align-items: center; gap: 6px;
     background: var(--sage-pale);
@@ -531,14 +546,6 @@
     border: 1.5px solid var(--sand);
     font-size: 14px;
   }
-  .rec-item-priority {
-    flex-shrink: 0;
-    width: 6px; height: 6px;
-    border-radius: 50%; margin-top: 6px;
-  }
-  .priority-high { background: var(--rose); }
-  .priority-medium { background: var(--amber); }
-  .priority-low { background: var(--sage); }
 
   .tags-row {
     display: flex; flex-wrap: wrap; gap: 8px;
@@ -562,16 +569,6 @@
     font-style: italic;
   }
 
-  .recheck-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--amber-pale);
-    border: 1px solid rgba(212,131,26,0.3);
-    border-radius: 100px;
-    padding: 8px 16px;
-    font-size: 13px; font-weight: 600; color: var(--amber);
-    margin-top: 8px;
-  }
-
   .disclaimer {
     background: var(--sand);
     border-radius: var(--radius-sm);
@@ -582,11 +579,9 @@
     border: 1px solid rgba(232,221,208,0.8);
   }
 
-  /* ── SECTION VISIBILITY ── */
   .screen { display: none; }
   .screen.active { display: block; }
 
-  /* ── PROGRESS BAR ── */
   .progress-bar {
     height: 3px;
     background: var(--sand);
@@ -601,7 +596,6 @@
     transition: width 0.4s ease;
   }
 
-  /* ── MISC ── */
   .divider { height: 1px; background: var(--sand); margin: 24px 0; }
   .text-sage { color: var(--sage); }
   .text-small { font-size: 12px; color: var(--bark-light); margin-top: 6px; }
@@ -616,7 +610,6 @@
   }
   .error-msg.show { display: block; }
 
-  /* ── ACTION BAR ── */
   .action-bar {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 20px; gap: 12px; flex-wrap: wrap;
@@ -642,11 +635,9 @@
   }
   .action-btn-outline:hover { background: var(--sand); }
 
-  /* ── RISK BANNER UPGRADED ── */
   .risk-emoji { font-size: 36px; margin-bottom: 8px; }
   .risk-meta { font-size: 12px; opacity: 0.6; margin-top: 8px; }
 
-  /* ── GAUGE SCORES ── */
   .gauge-wrap {
     position: relative; width: 80px; height: 80px;
     margin: 10px auto 8px;
@@ -670,7 +661,101 @@
     font-style: italic; line-height: 1.3;
   }
 
-  /* ── BILATERAL COMPARISON ── */
+  /* ── SCALE DRAWER ── */
+  .scale-toggle {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--sage);
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+    font-family: var(--font-body);
+    letter-spacing: 0.2px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .scale-toggle:hover { color: var(--sage-light); }
+
+  .scale-drawer {
+    display: none;
+    margin-top: 12px;
+    text-align: left;
+    border-top: 1px solid var(--sand);
+    padding-top: 12px;
+  }
+  .scale-drawer.open { display: block; }
+
+  .scale-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 4px;
+    transition: background 0.15s;
+  }
+  .scale-row.current {
+    background: var(--sage-pale);
+    border-left: 3px solid var(--sage);
+  }
+  .scale-row.current.warn-1 { background: #FFF9E6; border-left-color: #E6B800; }
+  .scale-row.current.warn-2 { background: var(--amber-pale); border-left-color: var(--amber); }
+  .scale-row.current.warn-3 { background: var(--rose-pale); border-left-color: var(--rose); }
+
+  .scale-badge {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    padding: 3px 8px;
+    border-radius: 100px;
+    background: var(--sand);
+    color: var(--bark-light);
+    white-space: nowrap;
+    margin-top: 1px;
+  }
+  .scale-row.current .scale-badge {
+    background: var(--sage);
+    color: white;
+  }
+  .scale-row.current.warn-1 .scale-badge { background: #B8960A; color: white; }
+  .scale-row.current.warn-2 .scale-badge { background: var(--amber); color: white; }
+  .scale-row.current.warn-3 .scale-badge { background: var(--rose); color: white; }
+
+  .scale-text {}
+  .scale-clinical {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--bark-mid);
+    margin-bottom: 1px;
+  }
+  .scale-plain {
+    font-size: 11px;
+    color: var(--bark-light);
+    line-height: 1.4;
+  }
+  .scale-current-you {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--sage);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+  .scale-row.current.warn-1 .scale-current-you { color: #B8960A; }
+  .scale-row.current.warn-2 .scale-current-you { color: var(--amber); }
+  .scale-row.current.warn-3 .scale-current-you { color: var(--rose); }
+
+  .scale-source {
+    font-size: 10px;
+    color: var(--bark-light);
+    margin-top: 8px;
+    font-style: italic;
+  }
+
   .bilateral-grid {
     display: grid; grid-template-columns: 1fr 1px 1fr; gap: 16px;
     margin-top: 12px;
@@ -697,7 +782,6 @@
     border-left: 3px solid var(--amber);
   }
 
-  /* ── VET URGENCY BADGE ── */
   .vet-urgency-badge {
     margin-top: 12px; padding: 10px 16px;
     border-radius: var(--radius-sm);
@@ -712,52 +796,68 @@
   /* ── NUTRITION SECTION ── */
   .nutrition-section { margin-top: 4px; }
 
-  .diet-rating-card {}
-  .diet-rating-row {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  .diet-rating-label {
-    font-size: 11px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.6px; color: var(--bark-light); margin-bottom: 4px;
-  }
-  .diet-rating-value {
-    font-family: var(--font-display);
-    font-size: 22px; font-weight: 700; color: var(--bark);
-  }
-  .diet-rating-badge {
-    padding: 6px 16px; border-radius: 100px;
-    font-size: 12px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .rating-poor { background: var(--rose-pale); color: var(--rose); }
-  .rating-fair { background: var(--amber-pale); color: var(--amber); }
-  .rating-good { background: var(--sage-pale); color: var(--sage); }
-  .rating-excellent { background: var(--sage-pale); color: var(--sage); border: 2px solid var(--sage); }
-  .diet-assessment-text {
-    font-size: 14px; color: var(--bark-mid); line-height: 1.7;
+  /* ── FOOD FORMAT INFO CARD ── */
+  /*
+   * CHANGE: Replaced the OHDS score / carb% / rating badge card with a clean
+   * informational overview card. No scoring — just context and what to know.
+   */
+  .diet-info-card {}
+  .diet-overview-text {
+    font-size: 15px; color: var(--bark-mid); line-height: 1.75;
+    margin-bottom: 0;
   }
 
-  /* ── MECHANISM CARD ── */
-  .mechanism-card { background: var(--bark); color: white; }
-  .mechanism-card .section-tag {
-    background: rgba(255,255,255,0.15); color: white;
+  /* ── FORMAT-SPECIFIC CALLOUT ── */
+  /*
+   * NEW: A highlighted block within the Main Food section that surfaces
+   * the format-specific guidance (kibble / wet / raw / home-prepared /
+   * freeze-dried / mixed). Written by Claude based on diet type selected.
+   */
+  .format-callout {
+    background: var(--amber-pale);
+    border: 1px solid rgba(212,131,26,0.25);
+    border-left: 4px solid var(--amber);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    margin: 16px 0 4px;
+    font-size: 14px;
+    color: var(--bark-mid);
+    line-height: 1.75;
   }
-  .mechanism-text {
-    font-size: 14px; line-height: 1.8; color: rgba(255,255,255,0.85);
-    margin-bottom: 4px;
-  }
-  .mechanism-card .divider { background: rgba(255,255,255,0.15); }
-  .mechanism-label {
-    font-size: 11px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.6px; color: rgba(255,255,255,0.5);
-    margin-bottom: 8px;
+  .format-callout-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--amber);
+    margin-bottom: 6px;
   }
 
-  /* ── TREAT ANALYSIS ── */
-  .treat-text { font-size: 14px; line-height: 1.7; color: var(--bark-mid); }
+  /* ── RISK FLAG BLOCK ── */
+  /*
+   * NEW: A distinct block for any format-specific risk flags,
+   * rendered only when the AI identifies something worth noting.
+   * Non-judgmental framing — "things to be aware of", not verdicts.
+   */
+  .risk-flag-block {
+    background: var(--rose-pale);
+    border: 1px solid rgba(192,57,43,0.2);
+    border-left: 4px solid var(--rose);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--bark-mid);
+    line-height: 1.7;
+  }
+  .risk-flag-block-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--rose);
+    margin-bottom: 6px;
+  }
+  /* Hide risk flag block when empty */
+  .risk-flag-block:empty { display: none; }
+  .risk-flag-block.hidden { display: none; }
 
-  /* ── PRIMARY REC CARD ── */
+  .mechanism-block { font-size: 14px; line-height: 1.8; color: var(--bark-mid); margin-bottom: 4px; }
+
   .primary-rec-card {
     background: linear-gradient(135deg, var(--sage) 0%, var(--sage-light) 100%);
     border-radius: var(--radius-lg);
@@ -773,7 +873,6 @@
     font-size: 20px; font-weight: 600; line-height: 1.4;
   }
 
-  /* ── REC LIST UPGRADED ── */
   .rec-item {
     border-left: 3px solid var(--sand);
     padding-left: 14px !important;
@@ -792,19 +891,12 @@
     padding: 2px 7px; border-radius: 100px;
     border: 1px solid var(--sage);
   }
-  .priority-badge {
-    font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 100px;
-  }
-  .pb-high { background: var(--rose-pale); color: var(--rose); }
-  .pb-medium { background: var(--amber-pale); color: var(--amber); }
-  .pb-low { background: var(--sage-pale); color: var(--sage); }
   .rec-item-rec { font-size: 14px; color: var(--bark-mid); line-height: 1.5; margin-bottom: 4px; }
   .rec-item-mechanism {
     font-size: 12px; color: var(--bark-light);
     font-style: italic; line-height: 1.4;
   }
 
-  /* ── INGREDIENT GRID ── */
   .ingredient-col-grid {
     display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
   }
@@ -816,7 +908,6 @@
   .ingredient-col-label.seek { color: var(--sage); }
   .ingredient-col-label.avoid { color: var(--rose); }
 
-  /* ── ACTION PLAN ── */
   .action-plan-grid {
     display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
     margin-top: 8px;
@@ -834,7 +925,6 @@
   }
   .action-plan-text { font-size: 13px; color: var(--bark-mid); line-height: 1.5; }
 
-  /* ── RECHECK CARD ── */
   .recheck-card {
     display: flex; align-items: center; gap: 16px;
     background: var(--amber-pale);
@@ -849,24 +939,6 @@
   }
   .recheck-text { font-size: 13px; color: var(--bark-mid); }
 
-
-  /* ── OHDS SCORE ── */
-  .ohds-card {}
-  .ohds-row { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:16px; gap:16px; }
-  .ohds-score-wrap { display:flex; align-items:baseline; gap:4px; }
-  .ohds-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:var(--bark-light); margin-bottom:6px; }
-  .ohds-score { font-family:var(--font-display); font-size:52px; font-weight:700; line-height:1; color:var(--bark); }
-  .ohds-max { font-size:20px; color:var(--bark-light); font-family:var(--font-display); }
-  .ohds-right { display:flex; flex-direction:column; align-items:flex-end; gap:10px; padding-top:4px; }
-  .ohds-carb-row { display:flex; flex-direction:column; align-items:flex-end; }
-  .ohds-carb-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--bark-light); }
-  .ohds-carb-value { font-size:18px; font-weight:700; font-family:var(--font-display); color:var(--amber); }
-  .ohds-bar-wrap { margin-bottom:16px; }
-  .ohds-bar-bg { height:10px; background:var(--sand); border-radius:100px; overflow:hidden; margin-bottom:4px; }
-  .ohds-bar-fill { height:100%; border-radius:100px; transition:width 1s ease, background 0.4s; background:var(--sage); }
-  .ohds-bar-labels { display:flex; justify-content:space-between; font-size:10px; color:var(--bark-light); font-weight:600; }
-
-  /* ── NUTRITION COMBINED SECTION ── */
   .nutrition-section-header {
     font-family: var(--font-display);
     font-size: 16px; font-weight: 700;
@@ -876,25 +948,22 @@
     border-bottom: 2px solid var(--sand);
   }
   .nutrition-section-divider { height:1px; background:var(--sand); margin:20px 0; }
-  .mechanism-block { font-size:14px; line-height:1.8; color:var(--bark-mid); margin-bottom:4px; }
 
-  /* ── ACTION PLAN INTRO ── */
   .action-plan-intro { font-size:14px; color:var(--bark-mid); line-height:1.7; margin-bottom:16px; font-style:italic; }
 
 </style>
+
 </head>
 <body>
 
 <div class="app">
 
-  <!-- HEADER -->
   <header class="header">
     <div class="logo-mark">🐾</div>
     <h1>DentalPaw</h1>
-    <p>AI-powered canine dental screening & nutrition guidance</p>
+    <p>AI-powered canine dental screening &amp; nutrition guidance</p>
   </header>
 
-  <!-- STEP INDICATORS -->
   <div class="steps" id="stepIndicator">
     <div class="step-dot active" id="dot1">1</div>
     <div class="step-line" id="line1"></div>
@@ -909,14 +978,11 @@
     <div class="progress-fill" id="progressFill" style="width:25%"></div>
   </div>
 
-  <!-- ════════════════════════════════════════════════ -->
-  <!-- SCREEN 1: DOG PROFILE                           -->
-  <!-- ════════════════════════════════════════════════ -->
+  <!-- SCREEN 1 -->
   <div class="screen active" id="screen1">
     <div class="card">
       <div class="card-title">Tell us about your dog</div>
       <div class="card-subtitle">This helps us calibrate the analysis to your dog's specific risk profile.</div>
-
       <div class="field-row">
         <div class="field">
           <label>Dog's Name (optional)</label>
@@ -924,10 +990,20 @@
         </div>
         <div class="field">
           <label>Breed *</label>
-          <input type="text" id="dogBreed" placeholder="e.g. Labrador Retriever">
+          <div class="breed-wrap" id="breedWrap">
+            <input
+              type="text"
+              id="dogBreed"
+              placeholder="Type to search breeds…"
+              autocomplete="off"
+              oninput="breedInput(this.value)"
+              onfocus="breedInput(this.value)"
+              onkeydown="breedKeydown(event)"
+            >
+            <ul class="breed-dropdown" id="breedDropdown" role="listbox"></ul>
+          </div>
         </div>
       </div>
-
       <div class="field-row">
         <div class="field">
           <label>Age (years) *</label>
@@ -938,7 +1014,6 @@
           <input type="number" id="dogWeight" placeholder="e.g. 45">
         </div>
       </div>
-
       <div class="field">
         <label>Sex &amp; Neuter Status *</label>
         <div class="select-wrap">
@@ -951,27 +1026,20 @@
           </select>
         </div>
       </div>
-
-      <button class="btn btn-sage mt-16" onclick="goToScreen(2)">
-        Continue — Diet & Care →
-      </button>
+      <button class="btn btn-sage mt-16" onclick="goToScreen(2)">Continue — Diet &amp; Care →</button>
       <div class="error-msg" id="err1">Please fill in Breed, Age, and Sex before continuing.</div>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════════════════ -->
-  <!-- SCREEN 2: DIET & CARE                           -->
-  <!-- ════════════════════════════════════════════════ -->
+  <!-- SCREEN 2 -->
   <div class="screen" id="screen2">
     <div class="card">
       <div class="card-title">Diet &amp; Dental Care</div>
       <div class="card-subtitle">The more context you give us, the more targeted your recommendations will be.</div>
-
       <div class="field">
         <label>Current Main Food *</label>
         <input type="text" id="currentFood" placeholder="e.g. Royal Canin Medium Adult, or Blue Buffalo Chicken">
       </div>
-
       <div class="field">
         <label>Diet Type *</label>
         <div class="select-wrap">
@@ -980,13 +1048,13 @@
             <option value="dry kibble">Dry Kibble</option>
             <option value="wet/canned food">Wet / Canned Food</option>
             <option value="raw diet">Raw Diet</option>
+            <option value="freeze-dried">Freeze-Dried</option>
             <option value="mixed kibble and wet">Mixed — Kibble &amp; Wet</option>
             <option value="prescription diet">Prescription Diet</option>
             <option value="home cooked">Home Cooked</option>
           </select>
         </div>
       </div>
-
       <div class="field">
         <label>Treats (select all that apply)</label>
         <div class="check-group" id="treatsGroup">
@@ -1000,7 +1068,6 @@
           <label class="check-item"><input type="checkbox" value="no regular treats"> None</label>
         </div>
       </div>
-
       <div class="field">
         <label>Treat Frequency</label>
         <div class="select-wrap">
@@ -1014,7 +1081,6 @@
           </select>
         </div>
       </div>
-
       <div class="field">
         <label>Feeding Schedule</label>
         <div class="select-wrap">
@@ -1027,7 +1093,6 @@
           </select>
         </div>
       </div>
-
       <div class="field">
         <label>Primary Protein Source in Main Food</label>
         <div class="select-wrap">
@@ -1042,7 +1107,6 @@
           </select>
         </div>
       </div>
-
       <div class="field">
         <label>Home Dental Care (select all that apply)</label>
         <div class="check-group" id="homeCareGroup">
@@ -1054,7 +1118,6 @@
           <label class="check-item"><input type="checkbox" value="none"> Nothing Currently</label>
         </div>
       </div>
-
       <div class="field-row">
         <div class="field">
           <label>Body Condition</label>
@@ -1081,7 +1144,6 @@
           </div>
         </div>
       </div>
-
       <div class="field">
         <label>Any Symptoms Noticed? (select all that apply)</label>
         <div class="check-group" id="symptomsGroup">
@@ -1094,7 +1156,6 @@
           <label class="check-item"><input type="checkbox" value="no symptoms noticed"> No Symptoms</label>
         </div>
       </div>
-
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
         <button class="btn btn-outline" style="flex:0 0 auto;width:auto;padding:12px 20px;" onclick="goToScreen(1)">← Back</button>
         <button class="btn btn-sage" style="flex:1;" onclick="goToScreen(3)">Continue — Upload Photos →</button>
@@ -1103,14 +1164,11 @@
     </div>
   </div>
 
-  <!-- ════════════════════════════════════════════════ -->
-  <!-- SCREEN 3: PHOTO UPLOAD                          -->
-  <!-- ════════════════════════════════════════════════ -->
+  <!-- SCREEN 3 -->
   <div class="screen" id="screen3">
     <div class="card">
       <div class="card-title">Upload Dental Photos</div>
       <div class="card-subtitle">Two photos of the side of your dog's mouth — these are the most diagnostically important views.</div>
-
       <div class="photo-guide">
         <h4>📸 How to get a good photo</h4>
         <ol>
@@ -1121,10 +1179,7 @@
           <li>Hold your phone horizontal and use flash if needed</li>
         </ol>
       </div>
-
-      <!-- Core 2 photos -->
       <div class="photo-grid">
-        <!-- Right Side -->
         <div class="photo-slot required" id="slot-right">
           <div class="photo-check">✓</div>
           <div class="photo-slot-required-badge">Required</div>
@@ -1135,8 +1190,6 @@
           <button class="upload-btn" onclick="triggerUpload('right')">Choose Photo</button>
           <img class="photo-preview" id="preview-right" src="" alt="Right side preview">
         </div>
-
-        <!-- Left Side -->
         <div class="photo-slot required" id="slot-left">
           <div class="photo-check">✓</div>
           <div class="photo-slot-required-badge">Required</div>
@@ -1148,16 +1201,11 @@
           <img class="photo-preview" id="preview-left" src="" alt="Left side preview">
         </div>
       </div>
-
       <div class="divider"></div>
-
-      <!-- Optional photos -->
       <div class="optional-hint">
-        <strong>Want a more complete analysis?</strong> Two optional photos can help us check your dog's front teeth and lower jaw. These are extras — your scan is complete with just the 2 photos above.
+        <strong>Want a more complete analysis?</strong> Two optional photos can help us check your dog's front teeth and lower jaw.
       </div>
-
       <div class="photo-grid">
-        <!-- Front -->
         <div class="photo-slot" id="slot-front">
           <div class="photo-check">✓</div>
           <div class="photo-slot-optional-badge">Optional</div>
@@ -1167,8 +1215,6 @@
           <button class="upload-btn" onclick="triggerUpload('front')">Add Photo</button>
           <img class="photo-preview" id="preview-front" src="" alt="Front preview">
         </div>
-
-        <!-- Lower -->
         <div class="photo-slot" id="slot-lower">
           <div class="photo-check">✓</div>
           <div class="photo-slot-optional-badge">Optional</div>
@@ -1179,26 +1225,19 @@
           <img class="photo-preview" id="preview-lower" src="" alt="Lower preview">
         </div>
       </div>
-
-      <!-- Hidden file inputs -->
       <input type="file" id="fileInput-right" accept="image/*" capture="environment" style="display:none" onchange="handleFileSelect(event,'right')">
       <input type="file" id="fileInput-left" accept="image/*" capture="environment" style="display:none" onchange="handleFileSelect(event,'left')">
       <input type="file" id="fileInput-front" accept="image/*" capture="environment" style="display:none" onchange="handleFileSelect(event,'front')">
       <input type="file" id="fileInput-lower" accept="image/*" capture="environment" style="display:none" onchange="handleFileSelect(event,'lower')">
-
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
         <button class="btn btn-outline" style="flex:0 0 auto;width:auto;padding:12px 20px;" onclick="goToScreen(2)">← Back</button>
-        <button class="btn" id="analyzeBtn" style="flex:1;background:var(--bark);" onclick="runAnalysis()">
-          🔍 Analyse My Dog's Teeth
-        </button>
+        <button class="btn" id="analyzeBtn" style="flex:1;background:var(--bark);" onclick="runAnalysis()">🔍 Analyse My Dog's Teeth</button>
       </div>
       <div class="error-msg" id="err3">Please upload at least the two required photos (right and left side) before analysing.</div>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════════════════ -->
-  <!-- LOADING SCREEN                                  -->
-  <!-- ════════════════════════════════════════════════ -->
+  <!-- LOADING -->
   <div class="loading-screen" id="loadingScreen">
     <span class="paw-spinner">🐾</span>
     <h2>Analysing <span id="loadingDogName">your dog</span>'s teeth…</h2>
@@ -1206,17 +1245,14 @@
     <div class="loading-steps">
       <div class="loading-step" id="lstep1">🖼 Examining dental photos</div>
       <div class="loading-step" id="lstep2">📊 Scoring tartar &amp; gum health</div>
-      <div class="loading-step" id="lstep3">🥗 Building nutrition recommendations</div>
+      <div class="loading-step" id="lstep3">🥗 Building nutrition information</div>
       <div class="loading-step" id="lstep4">📋 Preparing your report</div>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════════════════ -->
-  <!-- SCREEN 4: RESULTS                               -->
-  <!-- ════════════════════════════════════════════════ -->
+  <!-- SCREEN 4: RESULTS -->
   <div class="screen" id="screen4">
 
-    <!-- Action Bar -->
     <div class="action-bar">
       <div class="action-bar-dog" id="actionBarDog">Results</div>
       <div class="action-bar-btns">
@@ -1225,7 +1261,6 @@
       </div>
     </div>
 
-    <!-- Risk Banner -->
     <div class="risk-banner" id="riskBanner">
       <div class="risk-emoji" id="riskEmoji">🟢</div>
       <div class="risk-label" id="riskLabel">Screening Result</div>
@@ -1234,10 +1269,11 @@
       <div class="risk-meta" id="riskMeta"></div>
     </div>
 
-    <!-- Score Cards — Visual Gauges -->
     <div class="score-grid">
+
+      <!-- TARTAR CARD -->
       <div class="score-card">
-        <div class="score-card-label">Tartar</div>
+        <div class="score-card-label">Tartar / Calculus</div>
         <div class="gauge-wrap">
           <svg class="gauge" viewBox="0 0 80 80">
             <circle class="gauge-bg" cx="40" cy="40" r="32"/>
@@ -1247,7 +1283,41 @@
         </div>
         <div class="score-sublabel" id="tartarLabel">—</div>
         <div class="score-note" id="tartarNote">—</div>
+        <button class="scale-toggle" onclick="toggleScale('tartar')">What does this mean? ▾</button>
+        <div class="scale-drawer" id="scale-tartar">
+          <div class="scale-row" id="scale-tartar-0">
+            <div class="scale-badge">0</div>
+            <div class="scale-text">
+              <div class="scale-clinical">No Calculus</div>
+              <div class="scale-plain">No hardened deposits visible on the tooth surface.</div>
+            </div>
+          </div>
+          <div class="scale-row" id="scale-tartar-1">
+            <div class="scale-badge">1</div>
+            <div class="scale-text">
+              <div class="scale-clinical">Mild — &lt;⅓ surface coverage</div>
+              <div class="scale-plain">Light tartar along the gumline, covering less than a third of the visible tooth. Minimal deposits below the gumline.</div>
+            </div>
+          </div>
+          <div class="scale-row" id="scale-tartar-2">
+            <div class="scale-badge">2</div>
+            <div class="scale-text">
+              <div class="scale-clinical">Moderate — ⅓ to ⅔ surface coverage</div>
+              <div class="scale-plain">Moderate buildup covering a significant portion of the tooth. Some deposits may extend below the gumline.</div>
+            </div>
+          </div>
+          <div class="scale-row" id="scale-tartar-3">
+            <div class="scale-badge">3</div>
+            <div class="scale-text">
+              <div class="scale-clinical">Severe — &gt;⅔ surface coverage</div>
+              <div class="scale-plain">Heavy tartar covering most or all of the visible tooth surface, extending well below the gumline. Professional cleaning needed.</div>
+            </div>
+          </div>
+          <div class="scale-source">Calculus Index — AVDC/AAHA standard (0–3)</div>
+        </div>
       </div>
+
+      <!-- GUM HEALTH CARD -->
       <div class="score-card">
         <div class="score-card-label">Gum Health</div>
         <div class="gauge-wrap">
@@ -1259,7 +1329,41 @@
         </div>
         <div class="score-sublabel" id="gumLabel">—</div>
         <div class="score-note" id="gumNote">—</div>
+        <button class="scale-toggle" onclick="toggleScale('gum')">What does this mean? ▾</button>
+        <div class="scale-drawer" id="scale-gum">
+          <div class="scale-row" id="scale-gum-0">
+            <div class="scale-badge">PD0</div>
+            <div class="scale-text">
+              <div class="scale-clinical">Normal / Healthy (PD0)</div>
+              <div class="scale-plain">Gums are pink and firm. No inflammation, no attachment loss. Sulcus depth normal (typically under 3mm in dogs).</div>
+            </div>
+          </div>
+          <div class="scale-row" id="scale-gum-1">
+            <div class="scale-badge">PD1</div>
+            <div class="scale-text">
+              <div class="scale-clinical">Gingivitis Only (PD1)</div>
+              <div class="scale-plain">Gums are red or slightly swollen but no bone or attachment loss has occurred yet. This stage is fully reversible with cleaning and home care.</div>
+            </div>
+          </div>
+          <div class="scale-row" id="scale-gum-2">
+            <div class="scale-badge">PD2</div>
+            <div class="scale-text">
+              <div class="scale-clinical">Early Periodontitis (PD2)</div>
+              <div class="scale-plain">Less than 25% attachment loss. Early bone changes visible on X-ray. Pockets may begin to form. Professional treatment needed — some damage has begun.</div>
+            </div>
+          </div>
+          <div class="scale-row" id="scale-gum-3">
+            <div class="scale-badge">PD3–4</div>
+            <div class="scale-text">
+              <div class="scale-clinical">Moderate–Advanced Periodontitis (PD3–4)</div>
+              <div class="scale-plain">25–50%+ attachment loss. Significant bone loss, possible recession, tooth mobility, and pain. Veterinary treatment is urgent. Some damage is irreversible.</div>
+            </div>
+          </div>
+          <div class="scale-source">Periodontal Disease Staging — AVDC/AAHA/WSAVA standard (PD0–PD4)</div>
+        </div>
       </div>
+
+      <!-- STRUCTURE CARD -->
       <div class="score-card">
         <div class="score-card-label">Structure</div>
         <div class="gauge-wrap">
@@ -1271,10 +1375,42 @@
         </div>
         <div class="score-sublabel" id="structuralLabel">—</div>
         <div class="score-note" id="structuralNote">—</div>
+        <button class="scale-toggle" onclick="toggleScale('structural')">What does this mean? ▾</button>
+        <div class="scale-drawer" id="scale-structural">
+          <div class="scale-row" id="scale-structural-0">
+            <div class="scale-badge">0</div>
+            <div class="scale-text">
+              <div class="scale-clinical">Intact</div>
+              <div class="scale-plain">All visible tooth surfaces appear whole and undamaged. No chips, fractures, or missing teeth detected.</div>
+            </div>
+          </div>
+          <div class="scale-row" id="scale-structural-1">
+            <div class="scale-badge">1</div>
+            <div class="scale-text">
+              <div class="scale-clinical">Minor Damage</div>
+              <div class="scale-plain">Small chips or wear visible on one or more teeth. Enamel may be compromised but the tooth structure is largely intact.</div>
+            </div>
+          </div>
+          <div class="scale-row" id="scale-structural-2">
+            <div class="scale-badge">2</div>
+            <div class="scale-text">
+              <div class="scale-clinical">Fracture or Missing Tooth</div>
+              <div class="scale-plain">A visible fracture exposing dentine or pulp, or one or more teeth appear missing. Veterinary assessment is recommended.</div>
+            </div>
+          </div>
+          <div class="scale-row" id="scale-structural-3">
+            <div class="scale-badge">3</div>
+            <div class="scale-text">
+              <div class="scale-clinical">Severe Structural Damage</div>
+              <div class="scale-plain">Multiple fractures, significant tooth loss, or severe wear affecting multiple teeth. Prompt veterinary attention needed.</div>
+            </div>
+          </div>
+          <div class="scale-source">Structural Index — AVDC screening criteria (0–3)</div>
+        </div>
       </div>
+
     </div>
 
-    <!-- Side by side scores -->
     <div class="bilateral-card card">
       <div class="section-tag">📊 Left vs Right Comparison</div>
       <div class="bilateral-grid">
@@ -1293,48 +1429,62 @@
       <div class="asymmetry-note" id="asymmetryNote" style="display:none"></div>
     </div>
 
-    <!-- Key Findings -->
     <div class="card">
       <div class="section-tag">🔍 Key Findings</div>
       <ul class="findings-list" id="findingsList"></ul>
       <div class="vet-urgency-badge" id="vetUrgencyBadge" style="display:none"></div>
     </div>
 
-    <!-- ── NUTRITION SECTION ── -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- NUTRITION SECTION — REDESIGNED                                     -->
+    <!--                                                                    -->
+    <!-- WHAT CHANGED:                                                      -->
+    <!--  • Removed OHDS score, carb% estimate, and diet rating badge       -->
+    <!--  • Replaced with a neutral overview card (diet_assessment)         -->
+    <!--  • Main Food block now contains format-specific "what to know"     -->
+    <!--    content (diet_mechanism) plus a format callout (format_callout) -->
+    <!--    and optional risk flag block (format_risk_flags)                -->
+    <!--  • No verdicts, no scores — just information the owner can act on  -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
     <div class="nutrition-section">
 
-      <!-- OHDS Score + Diet Overview -->
-      <div class="card ohds-card">
-        <div class="section-tag">🥗 Nutrition &amp; Oral Health</div>
-        <div class="ohds-row">
-          <div class="ohds-score-wrap">
-            <div class="ohds-label">Oral Health Diet Score</div>
-            <div class="ohds-score" id="ohdsScore">—</div>
-            <div class="ohds-max">/10</div>
-          </div>
-          <div class="ohds-right">
-            <div class="diet-rating-badge" id="dietRatingBadge">—</div>
-            <div class="ohds-carb-row">
-              <span class="ohds-carb-label">Est. dietary carbs</span>
-              <span class="ohds-carb-value" id="estCarbPct">—</span>
-            </div>
-          </div>
-        </div>
-        <div class="ohds-bar-wrap">
-          <div class="ohds-bar-bg">
-            <div class="ohds-bar-fill" id="ohdsBarFill" style="width:0%"></div>
-          </div>
-          <div class="ohds-bar-labels"><span>Poor</span><span>Fair</span><span>Good</span><span>Excellent</span></div>
-        </div>
-        <div class="diet-assessment-text" id="dietAssessment"></div>
+      <!-- Diet Overview — informational, no scoring -->
+      <div class="card diet-info-card">
+        <div class="section-tag">🥗 Nutrition &amp; Your Dog's Dental Health</div>
+        <div class="diet-overview-text" id="dietAssessment"></div>
       </div>
 
-      <!-- Combined Food + Treat deep dive -->
+      <!-- Main Food + Treats + Science -->
       <div class="card">
         <div class="section-tag">🔬 Understanding Your Dog's Diet</div>
 
-        <div class="nutrition-section-header">🍽 Main Food</div>
+        <!-- ── MAIN FOOD FORMAT SECTION ── -->
+        <!--
+          diet_mechanism: 2–3 sentences explaining how this food format
+          interacts with dental health — neutral, factual, not evaluative.
+          Written by Claude based on dietType selected in screen 2.
+
+          format_callout: The "what to keep in mind" for this specific
+          format. Surfaces the if-x-then-y guidance in a warm, informative
+          tone. e.g. for wet food: what to add, what to watch for.
+
+          format_risk_flags: Only populated when there is something
+          genuinely worth flagging for this format (e.g. raw diet bone
+          fracture risk, freeze-dried nutritional balance). Left empty
+          (and hidden) when no flags apply.
+        -->
+        <div class="nutrition-section-header">🍽 Your Dog's Food Format</div>
         <div class="mechanism-block" id="dietMechanism"></div>
+
+        <div class="format-callout" id="formatCallout">
+          <div class="format-callout-label">What to Keep in Mind</div>
+          <div id="formatCalloutText"></div>
+        </div>
+
+        <div class="risk-flag-block hidden" id="formatRiskFlags">
+          <div class="risk-flag-block-label">Things Worth Being Aware Of</div>
+          <div id="formatRiskFlagsText"></div>
+        </div>
 
         <div class="nutrition-section-divider"></div>
 
@@ -1353,7 +1503,7 @@
         <div class="primary-rec-text" id="primaryRec">—</div>
       </div>
 
-      <!-- Suggestions — food and product -->
+      <!-- Suggestions -->
       <div class="card">
         <div class="section-tag">💡 Suggestions Worth Considering</div>
         <div class="rec-list" id="recList"></div>
@@ -1374,7 +1524,7 @@
         </div>
       </div>
 
-      <!-- Journey / Action Plan -->
+      <!-- Action Plan -->
       <div class="card" id="actionPlanCard">
         <div class="section-tag" id="actionPlanTag">📅 A Suggested Path Forward</div>
         <div class="action-plan-intro" id="actionPlanIntro"></div>
@@ -1412,7 +1562,6 @@
 
     </div><!-- /nutrition-section -->
 
-    <!-- Disclaimer -->
     <div class="disclaimer">
       <strong>Screening tool only.</strong> DentalPaw analyses visible tooth surfaces from photographs. Subgingival disease, periodontal pockets, and root health cannot be assessed from photos. Any orange or red result should be discussed with your veterinarian promptly. This tool does not replace professional veterinary care.
     </div>
@@ -1422,15 +1571,10 @@
 </div><!-- /app -->
 
 <script>
-// ── STATE ──────────────────────────────────────────────────────────────────────
 const state = {
   imageBase64: { right: null, left: null, front: null, lower: null },
   imageMediaType: { right: null, left: null, front: null, lower: null },
 };
-
-// ── FILE HANDLING ─────────────────────────────────────────────────────────────
-// Images are converted to base64 locally and sent directly to the API
-// Uploadcare is used for storage/preview only - base64 goes to Claude
 
 function triggerUpload(side) {
   document.getElementById(`fileInput-${side}`).click();
@@ -1439,11 +1583,7 @@ function triggerUpload(side) {
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = (e) => {
-      // Strip the data:image/jpeg;base64, prefix - just the raw base64
-      const base64 = e.target.result.split(',')[1];
-      resolve(base64);
-    };
+    reader.onload = (e) => { resolve(e.target.result.split(',')[1]); };
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
@@ -1451,9 +1591,6 @@ function fileToBase64(file) {
 
 function resizeImageIfNeeded(file) {
   return new Promise((resolve) => {
-    // Very aggressive compression - phone photos must be tiny for API speed
-    // Target: max 500px longest side, 0.50 quality = typically 25-45KB per image
-    // Two images = ~50-90KB total base64 payload - well within limits
     const MAX_DIMENSION = 500;
     const QUALITY = 0.50;
     const img = new Image();
@@ -1467,10 +1604,7 @@ function resizeImageIfNeeded(file) {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(url);
-      canvas.toBlob((blob) => {
-        console.log(`Image resized: ${canvas.width}x${canvas.height}, ~${Math.round(blob.size/1024)}KB`);
-        resolve(blob);
-      }, 'image/jpeg', QUALITY);
+      canvas.toBlob((blob) => { resolve(blob); }, 'image/jpeg', QUALITY);
     };
     img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
     img.src = url;
@@ -1480,41 +1614,27 @@ function resizeImageIfNeeded(file) {
 async function handleFileSelect(event, side) {
   const file = event.target.files[0];
   if (!file) return;
-
   const slot = document.getElementById(`slot-${side}`);
   const preview = document.getElementById(`preview-${side}`);
-
-  // Show local preview immediately
-  const localUrl = URL.createObjectURL(file);
-  preview.src = localUrl;
+  preview.src = URL.createObjectURL(file);
   preview.style.display = 'block';
-
   slot.querySelector('.upload-btn').textContent = 'Processing…';
   slot.querySelector('.upload-btn').disabled = true;
-
   try {
-    // Resize if needed, then convert to base64
     const resized = await resizeImageIfNeeded(file);
     const base64 = await fileToBase64(resized);
-    const mediaType = 'image/jpeg';
-
-    // Store base64 and media type for API call
     state.imageBase64[side] = base64;
-    state.imageMediaType[side] = mediaType;
-
+    state.imageMediaType[side] = 'image/jpeg';
     slot.classList.add('uploaded');
     slot.querySelector('.upload-btn').textContent = '✓ Change Photo';
     slot.querySelector('.upload-btn').disabled = false;
   } catch (err) {
-    console.error('Processing error:', err);
     slot.querySelector('.upload-btn').textContent = '⚠ Retry';
     slot.querySelector('.upload-btn').disabled = false;
   }
 }
 
-// ── NAVIGATION ─────────────────────────────────────────────────────────────────
 function goToScreen(n) {
-  // Validate before advancing
   if (n === 2) {
     const breed = document.getElementById('dogBreed').value.trim();
     const age = document.getElementById('dogAge').value.trim();
@@ -1525,7 +1645,6 @@ function goToScreen(n) {
     if (!sex) { errEl.textContent = 'Please select your dog\'s sex and neuter status.'; errEl.classList.add('show'); return; }
     errEl.classList.remove('show');
   }
-
   if (n === 3) {
     const food = document.getElementById('currentFood').value.trim();
     const diet = document.getElementById('dietType').value;
@@ -1534,12 +1653,8 @@ function goToScreen(n) {
     if (!diet) { errEl.textContent = 'Please select a diet type.'; errEl.classList.add('show'); return; }
     errEl.classList.remove('show');
   }
-
-  // Hide all screens
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(`screen${n}`).classList.add('active');
-
-  // Update step indicators
   for (let i = 1; i <= 4; i++) {
     const dot = document.getElementById(`dot${i}`);
     dot.classList.remove('active','complete');
@@ -1547,17 +1662,12 @@ function goToScreen(n) {
     else if (i === n) dot.classList.add('active');
   }
   for (let i = 1; i <= 3; i++) {
-    const line = document.getElementById(`line${i}`);
-    line.classList.toggle('complete', i < n);
+    document.getElementById(`line${i}`).classList.toggle('complete', i < n);
   }
-
-  // Update progress bar
   document.getElementById('progressFill').style.width = `${(n/4)*100}%`;
-
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ── CHECKBOX HANDLING ──────────────────────────────────────────────────────────
 document.querySelectorAll('.check-group').forEach(group => {
   group.addEventListener('change', e => {
     const item = e.target.closest('.check-item');
@@ -1569,7 +1679,6 @@ function getCheckedValues(groupId) {
   return [...document.querySelectorAll(`#${groupId} input:checked`)].map(i => i.value);
 }
 
-// ── COLLECT DOG PROFILE ────────────────────────────────────────────────────────
 function collectProfile() {
   return {
     name: document.getElementById('dogName').value.trim() || 'Your dog',
@@ -1590,47 +1699,31 @@ function collectProfile() {
   };
 }
 
-// ── LOADING ANIMATION ──────────────────────────────────────────────────────────
 function animateLoadingSteps() {
-  // Initial animation — step 1 starts active
   document.getElementById('lstep1').classList.add('active');
 }
 
 function activateLoadingStep(n) {
-  // n is 1-based: 1=examining, 2=scoring, 3=nutrition, 4=preparing
   const steps = ['lstep1','lstep2','lstep3','lstep4'];
   steps.forEach((id, i) => {
     const el = document.getElementById(id);
-    // Clear all classes first
     el.classList.remove('active', 'done');
-    if (i + 1 < n) {
-      // Steps before current = done
-      el.classList.add('done');
-    } else if (i + 1 === n) {
-      // Current step = active
-      el.classList.add('active');
-    }
-    // Steps after current = default (no class)
+    if (i + 1 < n) el.classList.add('done');
+    else if (i + 1 === n) el.classList.add('active');
   });
 }
 
-// ── RUN ANALYSIS ───────────────────────────────────────────────────────────────
 async function runAnalysis() {
   if (!state.imageBase64.right || !state.imageBase64.left) {
     document.getElementById('err3').classList.add('show');
     return;
   }
   document.getElementById('err3').classList.remove('show');
-
   const profile = collectProfile();
-
-  // Show loading
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('loadingScreen').classList.add('active');
   document.getElementById('loadingDogName').textContent = profile.name;
   animateLoadingSteps();
-
-  // Update step UI
   for (let i = 1; i <= 4; i++) {
     const dot = document.getElementById(`dot${i}`);
     dot.classList.remove('active','complete');
@@ -1640,17 +1733,7 @@ async function runAnalysis() {
   document.getElementById('progressFill').style.width = '90%';
 
   try {
-    // ── STEP 1: Dental analysis (with photos) ───────────────────────────────
     activateLoadingStep(1);
-
-    // Check payload size before sending
-    const rightSize = Math.round((state.imageBase64.right || '').length / 1024);
-    const leftSize  = Math.round((state.imageBase64.left  || '').length / 1024);
-    console.log(`Image sizes — right: ${rightSize}KB, left: ${leftSize}KB, total: ${rightSize + leftSize}KB`);
-    if (rightSize + leftSize > 400) {
-      console.warn('Payload still large — consider further compression');
-    }
-
     const dentalResponse = await fetch('/.netlify/functions/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1665,13 +1748,75 @@ async function runAnalysis() {
         },
       }),
     });
-
     const dentalData = await dentalResponse.json();
     if (!dentalData.success) throw new Error(dentalData.error || 'Dental analysis failed');
     activateLoadingStep(2);
 
-    // ── STEP 2: Nutrition analysis (no images — much faster) ────────────────
     activateLoadingStep(3);
+
+    /*
+     * NUTRITION API CALL
+     * ─────────────────────────────────────────────────────────────────────
+     * The nutrition prompt (in your Netlify function) should now ask Claude
+     * to return these fields in the nutrition object:
+     *
+     *  diet_assessment      — 2–3 sentence neutral overview of how this
+     *                         dog's overall dietary picture relates to
+     *                         dental health. No score, no verdict.
+     *
+     *  diet_mechanism       — 1–2 sentences explaining HOW this food
+     *                         format physically interacts with the teeth.
+     *                         Factual and neutral. e.g. "Dry kibble
+     *                         creates some mechanical abrasion as your
+     *                         dog chews, which can slow plaque buildup
+     *                         on the tooth surface."
+     *
+     *  format_callout       — The "what to keep in mind" paragraph for
+     *                         this specific diet type. This is the core
+     *                         of the if-x-then-y guidance. Warm, helpful,
+     *                         informative. Tailored to dental disease
+     *                         stage from dental results.
+     *                         Examples by format:
+     *                         - dry kibble: note the mechanical benefit
+     *                           but flag that most dogs swallow whole;
+     *                           mention VOHC dental kibble option.
+     *                         - wet/canned: explain soft texture means
+     *                           less abrasion; what to add to compensate.
+     *                         - raw: acknowledge chewing benefit but note
+     *                           bone fracture risk and nutritional balance.
+     *                         - freeze-dried: explain it behaves like wet
+     *                           once rehydrated; nutritional balance note.
+     *                         - home cooked: emphasise nutritional
+     *                           completeness; AAFCO compliance importance.
+     *                         - mixed: note which format is dominant and
+     *                           guide accordingly.
+     *
+     *  format_risk_flags    — OPTIONAL. Only populate when there is a
+     *                         genuine format-specific concern worth
+     *                         surfacing (e.g. raw bone fracture risk,
+     *                         freeze-dried nutritional gaps, home-cooked
+     *                         deficiency risk). Return empty string ""
+     *                         when no meaningful flags apply (kibble,
+     *                         mixed, prescription diet). The UI hides
+     *                         this block automatically when empty.
+     *
+     *  treat_analysis       — unchanged
+     *  oral_ph_impact       — unchanged (the science block)
+     *  primary_recommendation — unchanged
+     *  food_recommendations — unchanged
+     *  ingredients_to_seek  — unchanged
+     *  ingredients_to_avoid — unchanged
+     *  action_plan          — unchanged
+     *  home_care_tips       — unchanged
+     *  positive_note        — unchanged
+     *  recheck_days         — unchanged
+     *
+     * REMOVED fields (no longer rendered):
+     *  ohds_score           — removed
+     *  estimated_carb_pct   — removed
+     *  diet_oral_health_rating — removed
+     * ─────────────────────────────────────────────────────────────────────
+     */
     const nutritionResponse = await fetch('/.netlify/functions/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1681,12 +1826,10 @@ async function runAnalysis() {
         dentalResults: dentalData.dental,
       }),
     });
-
     const nutritionData = await nutritionResponse.json();
     if (!nutritionData.success) throw new Error(nutritionData.error || 'Nutrition analysis failed');
     activateLoadingStep(4);
 
-    // ── Combine and render ───────────────────────────────────────────────────
     renderResults({
       success: true,
       dental: dentalData.dental,
@@ -1703,7 +1846,6 @@ async function runAnalysis() {
   }
 }
 
-// ── CONSTANTS ──────────────────────────────────────────────────────────────────
 const TARTAR_LABELS  = ['None','Mild','Moderate','Severe'];
 const GUM_LABELS     = ['Healthy','Mild Gingivitis','Moderate','Severe'];
 const STRUCT_LABELS  = ['Intact','Minor','Moderate','Severe'];
@@ -1713,17 +1855,13 @@ const RISK_EMOJIS    = { GREEN:'🟢', YELLOW:'🟡', ORANGE:'🟠', RED:'🔴' 
 const GAUGE_COLORS   = { 0:'#4A7C59', 1:'#B8960A', 2:'#D4831A', 3:'#C0392B' };
 const URGENCY_LABELS = { routine:'✓ Routine vet visit at next scheduled appointment', soon:'📋 Schedule a vet dental exam within 6 months', prompt:'⚠️ Vet dental exam recommended within 1-2 months', urgent:'🚨 Veterinary attention needed soon' };
 const URGENCY_CLASSES = { routine:'urgency-routine', soon:'urgency-soon', prompt:'urgency-prompt', urgent:'urgency-urgent' };
-const RATING_CLASSES = { poor:'rating-poor', fair:'rating-fair', good:'rating-good', excellent:'rating-excellent' };
 
-// Global result store for PDF
 let lastResult = null;
 let lastProfile = null;
 
-// ── GAUGE HELPER ───────────────────────────────────────────────────────────────
 function setGauge(gaugeId, score) {
-  const circumference = 2 * Math.PI * 32; // r=32
-  const pct = score / 3;
-  const dash = circumference * pct;
+  const circumference = 2 * Math.PI * 32;
+  const dash = circumference * (score / 3);
   const el = document.getElementById(gaugeId);
   if (!el) return;
   el.style.strokeDasharray = `${dash} ${circumference}`;
@@ -1734,7 +1872,6 @@ function scoreColor(score) {
   return GAUGE_COLORS[score] || GAUGE_COLORS[0];
 }
 
-// ── RENDER RESULTS ─────────────────────────────────────────────────────────────
 function renderResults(result, profile) {
   lastResult = result;
   lastProfile = profile;
@@ -1755,17 +1892,14 @@ function renderResults(result, profile) {
   document.getElementById('riskMeta').textContent =
     `Composite score: ${dental.composite_score ?? '—'}/9 · Analysed ${new Date().toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'})}`;
 
-  // Scores + gauges
+  // Gauges
   const tc = dental.tartar?.composite ?? 0;
   const gc = dental.gingival?.composite ?? 0;
   const sc = dental.structural?.score ?? 0;
-
   setGauge('gaugeT', tc); setGauge('gaugeG', gc); setGauge('gaugeS', sc);
-
   setText('tartarScore', tc, scoreColor(tc));
   setText('gumScore',    gc, scoreColor(gc));
   setText('structuralScore', sc, scoreColor(sc));
-
   document.getElementById('tartarLabel').textContent    = TARTAR_LABELS[tc] || '—';
   document.getElementById('gumLabel').textContent       = GUM_LABELS[gc] || '—';
   document.getElementById('structuralLabel').textContent = STRUCT_LABELS[sc] || '—';
@@ -1773,13 +1907,12 @@ function renderResults(result, profile) {
   document.getElementById('gumNote').textContent       = dental.gingival?.notes || '';
   document.getElementById('structuralNote').textContent = dental.structural?.notes || '';
 
-  // Bilateral comparison
+  // Bilateral
   const tr = dental.tartar?.right ?? 0;  const tl = dental.tartar?.left ?? 0;
   const gr = dental.gingival?.right ?? 0; const gl = dental.gingival?.left ?? 0;
   setText('tartarRight', tr, scoreColor(tr)); setText('tartarLeft', tl, scoreColor(tl));
   setText('gumRight',    gr, scoreColor(gr)); setText('gumLeft',    gl, scoreColor(gl));
 
-  // Asymmetry detection
   const asymNote = document.getElementById('asymmetryNote');
   if (Math.abs(tr - tl) >= 2 || Math.abs(gr - gl) >= 2) {
     asymNote.style.display = 'block';
@@ -1812,30 +1945,50 @@ function renderResults(result, profile) {
     badge.textContent = URGENCY_LABELS[urgency] || URGENCY_LABELS.routine;
   }
 
-  // OHDS Score + carb estimate
-  const ohds = nutrition.ohds_score || 5;
-  const ohdsEl = document.getElementById('ohdsScore');
-  ohdsEl.textContent = ohds;
-  const ohdsColor = ohds >= 8 ? 'var(--sage)' : ohds >= 6 ? '#B8960A' : ohds >= 4 ? 'var(--amber)' : 'var(--rose)';
-  ohdsEl.style.color = ohdsColor;
-  const ohdsBar = document.getElementById('ohdsBarFill');
-  if (ohdsBar) { ohdsBar.style.width = (ohds/10*100) + '%'; ohdsBar.style.background = ohdsColor; }
-  const carbEl = document.getElementById('estCarbPct');
-  if (carbEl) carbEl.textContent = nutrition.estimated_carb_pct ? '~' + nutrition.estimated_carb_pct + '%' : '--';
+  // ── NUTRITION — UPDATED RENDER LOGIC ──────────────────────────────────────
+  // REMOVED: ohdsScore, ohdsBarFill, estCarbPct, dietRatingBadge rendering
+  // ADDED:   formatCallout and formatRiskFlags rendering
 
-  // Diet rating badge
-  const rating = (nutrition.diet_oral_health_rating || 'fair').toLowerCase();
-  const ratingBadge = document.getElementById('dietRatingBadge');
-  if (ratingBadge) { ratingBadge.textContent = rating.toUpperCase(); ratingBadge.className = 'diet-rating-badge ' + (RATING_CLASSES[rating] || 'rating-fair'); }
-  const daEl = document.getElementById('dietAssessment'); if (daEl) daEl.textContent = nutrition.diet_assessment || '';
+  // Diet overview (neutral, no score)
+  const daEl = document.getElementById('dietAssessment');
+  if (daEl) daEl.textContent = nutrition.diet_assessment || '';
 
-  // Combined food + treat + science blocks
-  const dmEl = document.getElementById('dietMechanism'); if (dmEl) dmEl.textContent = nutrition.diet_mechanism || '';
-  const taEl = document.getElementById('treatAnalysis'); if (taEl) taEl.textContent = nutrition.treat_analysis || '';
-  const phEl = document.getElementById('oralpHImpact'); if (phEl) phEl.textContent = nutrition.oral_ph_impact || '';
+  // Main food — how this format works
+  const dmEl = document.getElementById('dietMechanism');
+  if (dmEl) dmEl.textContent = nutrition.diet_mechanism || '';
+
+  // Format-specific callout (the if-x-then-y content)
+  const fcText = document.getElementById('formatCalloutText');
+  const fcBlock = document.getElementById('formatCallout');
+  if (fcText && fcBlock) {
+    const calloutContent = nutrition.format_callout || '';
+    fcText.textContent = calloutContent;
+    // Hide the callout block entirely if empty
+    fcBlock.style.display = calloutContent.trim() ? 'block' : 'none';
+  }
+
+  // Format risk flags (only shown when genuinely populated)
+  const frText = document.getElementById('formatRiskFlagsText');
+  const frBlock = document.getElementById('formatRiskFlags');
+  if (frText && frBlock) {
+    const flagContent = nutrition.format_risk_flags || '';
+    frText.textContent = flagContent;
+    if (flagContent.trim()) {
+      frBlock.classList.remove('hidden');
+    } else {
+      frBlock.classList.add('hidden');
+    }
+  }
+
+  // Treats + science — unchanged
+  const taEl = document.getElementById('treatAnalysis');
+  if (taEl) taEl.textContent = nutrition.treat_analysis || '';
+  const phEl = document.getElementById('oralpHImpact');
+  if (phEl) phEl.textContent = nutrition.oral_ph_impact || '';
 
   // Primary recommendation
-  const prEl = document.getElementById('primaryRec'); if (prEl) prEl.textContent = nutrition.primary_recommendation || '---';
+  const prEl = document.getElementById('primaryRec');
+  if (prEl) prEl.textContent = nutrition.primary_recommendation || '---';
 
   // Suggestions list
   const recList = document.getElementById('recList');
@@ -1851,13 +2004,15 @@ function renderResults(result, profile) {
   }
 
   // Ingredients
-  const seekEl = document.getElementById('seekTags'); const avoidEl = document.getElementById('avoidTags');
-  if (seekEl) seekEl.innerHTML = (nutrition.ingredients_to_seek||[]).map(function(s){return '<span class="tag tag-seek">+ ' + escHtml(s) + '</span>';}).join('');
-  if (avoidEl) avoidEl.innerHTML = (nutrition.ingredients_to_avoid||[]).map(function(s){return '<span class="tag tag-avoid">- ' + escHtml(s) + '</span>';}).join('');
+  const seekEl = document.getElementById('seekTags');
+  const avoidEl = document.getElementById('avoidTags');
+  if (seekEl) seekEl.innerHTML = (nutrition.ingredients_to_seek||[]).map(s => '<span class="tag tag-seek">+ ' + escHtml(s) + '</span>').join('');
+  if (avoidEl) avoidEl.innerHTML = (nutrition.ingredients_to_avoid||[]).map(s => '<span class="tag tag-avoid">- ' + escHtml(s) + '</span>').join('');
 
   // Action plan
   const ap = nutrition.action_plan || {};
-  const apIntro = document.getElementById('actionPlanIntro'); if (apIntro) apIntro.textContent = nutrition.action_plan_intro || '';
+  const apIntro = document.getElementById('actionPlanIntro');
+  if (apIntro) apIntro.textContent = nutrition.action_plan_intro || '';
   if (risk === 'RED') {
     const aptEl = document.getElementById('actionPlanTag'); if (aptEl) aptEl.textContent = 'What Needs to Happen Now';
     const apl30 = document.getElementById('planLabel30'); if (apl30) apl30.textContent = 'This Week';
@@ -1868,7 +2023,7 @@ function renderResults(result, profile) {
   const p60 = document.getElementById('plan60'); if (p60) p60.textContent = ap.day_60 || '--';
   const p90 = document.getElementById('plan90'); if (p90) p90.textContent = ap.day_90 || '--';
 
-  // Home care tips
+  // Home care
   const hct = document.getElementById('homeCareTips');
   if (hct) {
     hct.innerHTML = '';
@@ -1878,14 +2033,18 @@ function renderResults(result, profile) {
       hct.appendChild(li);
     });
   }
-  const pnEl = document.getElementById('positiveNote'); if (pnEl) pnEl.textContent = nutrition.positive_note || '';
+  const pnEl = document.getElementById('positiveNote');
+  if (pnEl) pnEl.textContent = nutrition.positive_note || '';
 
   // Recheck
   const days = nutrition.recheck_days || 60;
   const rtEl = document.getElementById('recheckText');
   if (rtEl) rtEl.textContent = 'Recheck recommended in ' + days + ' days — ' + new Date(Date.now() + days * 86400000).toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'});
 
-  // Show screen
+  // Highlight the current score rows in each scale drawer
+  highlightScales(tc, gc, sc);
+
+  // Show results
   document.getElementById('loadingScreen').classList.remove('active');
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen4').classList.add('active');
@@ -1904,12 +2063,6 @@ function setText(id, value, color) {
   if (color) el.style.color = color;
 }
 
-function setScore(valueId, labelId, score, labels) {
-  setText(valueId, score, scoreColor(score));
-  document.getElementById(labelId).textContent = labels[score] || '—';
-}
-
-// ── PDF DOWNLOAD ───────────────────────────────────────────────────────────────
 async function downloadPDF() {
   const btn = document.getElementById('pdfBtn');
   btn.textContent = '⏳ Generating…';
@@ -1947,8 +2100,10 @@ async function downloadPDF() {
   .primary-rec { background: ${col}; color: white; border-radius: 8px; padding: 14px 18px; margin: 12px 0; }
   .primary-rec .eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.7; margin-bottom: 4px; }
   .primary-rec .text { font-size: 15px; font-weight: 600; }
-  .mechanism-box { background: #2C1810; color: rgba(255,255,255,0.85); border-radius: 8px; padding: 14px 18px; margin: 12px 0; font-size: 13px; line-height: 1.7; }
-  .mechanism-box .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.5; margin-bottom: 6px; }
+  .format-box { background: #FDF3E3; border-left: 4px solid #D4831A; border-radius: 6px; padding: 12px 16px; margin: 10px 0; font-size: 13px; color: #5C3D2E; }
+  .format-box .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: #D4831A; margin-bottom: 4px; font-weight: 700; }
+  .risk-flag-box { background: #FDECEA; border-left: 4px solid #C0392B; border-radius: 6px; padding: 12px 16px; margin: 10px 0; font-size: 13px; color: #5C3D2E; }
+  .risk-flag-box .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: #C0392B; margin-bottom: 4px; font-weight: 700; }
   .plan { display: flex; gap: 10px; margin: 12px 0; }
   .plan-item { flex: 1; background: #FAF7F2; border-top: 3px solid #4A7C59; border-radius: 6px; padding: 12px 10px; }
   .plan-day { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #4A7C59; margin-bottom: 6px; }
@@ -2002,14 +2157,13 @@ async function downloadPDF() {
 <h2>Key Findings</h2>
 ${(dental.key_findings || []).map(f => `<div class="finding">→ ${f}</div>`).join('')}
 
-<h2>Nutrition &amp; Diet Analysis</h2>
-<p><strong>Diet oral health rating:</strong> ${nutrition.diet_oral_health_rating || '—'}</p>
+<h2>Nutrition &amp; Dental Health</h2>
 <p>${nutrition.diet_assessment || ''}</p>
 
-<div class="mechanism-box">
-  <div class="lbl">How This Diet Affects Your Dog's Teeth</div>
-  ${nutrition.diet_mechanism || ''}
-</div>
+<h2>About Your Dog's Food Format</h2>
+<p>${nutrition.diet_mechanism || ''}</p>
+${nutrition.format_callout ? `<div class="format-box"><div class="lbl">What to Keep in Mind</div>${nutrition.format_callout}</div>` : ''}
+${nutrition.format_risk_flags ? `<div class="risk-flag-box"><div class="lbl">Things Worth Being Aware Of</div>${nutrition.format_risk_flags}</div>` : ''}
 
 <div class="primary-rec">
   <div class="eyebrow">Most Important Action Right Now</div>
@@ -2047,15 +2201,10 @@ ${(nutrition.home_care_tips || []).map(t => `<div class="finding">→ ${t}</div>
 
 </body></html>`;
 
-    // Open print dialog — browser saves as PDF
     const win = window.open('', '_blank');
     win.document.write(html);
     win.document.close();
-    win.onload = () => {
-      setTimeout(() => {
-        win.print();
-      }, 500);
-    };
+    win.onload = () => { setTimeout(() => { win.print(); }, 500); };
 
   } catch(err) {
     console.error('PDF error:', err);
@@ -2069,6 +2218,178 @@ ${(nutrition.home_care_tips || []).map(t => `<div class="finding">→ ${t}</div>
 function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
+
+// ── SCALE DRAWERS ─────────────────────────────────────────────────────────────
+// Toggles the expandable scale reference under each score card.
+// highlightScales() is called after renderResults() to mark the user's
+// current score row and apply the appropriate colour warning class.
+
+function toggleScale(type) {
+  const drawer = document.getElementById('scale-' + type);
+  const btn = drawer.previousElementSibling;
+  const isOpen = drawer.classList.toggle('open');
+  btn.textContent = isOpen ? 'Hide scale ▴' : 'What does this mean? ▾';
+}
+
+function highlightScales(tartarScore, gumScore, structuralScore) {
+  // Tartar — 0 to 3, warn classes at 1/2/3
+  [0,1,2,3].forEach(i => {
+    const row = document.getElementById('scale-tartar-' + i);
+    if (!row) return;
+    row.classList.remove('current','warn-1','warn-2','warn-3');
+    // Remove any previous "your score" label
+    const prev = row.querySelector('.scale-current-you');
+    if (prev) prev.remove();
+    if (i === tartarScore) {
+      row.classList.add('current');
+      if (i === 1) row.classList.add('warn-1');
+      if (i === 2) row.classList.add('warn-2');
+      if (i === 3) row.classList.add('warn-3');
+      const label = document.createElement('div');
+      label.className = 'scale-current-you';
+      label.textContent = '← Your dog\'s score';
+      row.querySelector('.scale-text').appendChild(label);
+    }
+  });
+
+  // Gum health — mapped 0→PD0, 1→PD1, 2→PD2, 3→PD3-4
+  [0,1,2,3].forEach(i => {
+    const row = document.getElementById('scale-gum-' + i);
+    if (!row) return;
+    row.classList.remove('current','warn-1','warn-2','warn-3');
+    const prev = row.querySelector('.scale-current-you');
+    if (prev) prev.remove();
+    if (i === gumScore) {
+      row.classList.add('current');
+      if (i === 1) row.classList.add('warn-1');
+      if (i === 2) row.classList.add('warn-2');
+      if (i === 3) row.classList.add('warn-3');
+      const label = document.createElement('div');
+      label.className = 'scale-current-you';
+      label.textContent = '← Your dog\'s score';
+      row.querySelector('.scale-text').appendChild(label);
+    }
+  });
+
+  // Structural — 0 to 3
+  [0,1,2,3].forEach(i => {
+    const row = document.getElementById('scale-structural-' + i);
+    if (!row) return;
+    row.classList.remove('current','warn-1','warn-2','warn-3');
+    const prev = row.querySelector('.scale-current-you');
+    if (prev) prev.remove();
+    if (i === structuralScore) {
+      row.classList.add('current');
+      if (i === 1) row.classList.add('warn-1');
+      if (i === 2) row.classList.add('warn-2');
+      if (i === 3) row.classList.add('warn-3');
+      const label = document.createElement('div');
+      label.className = 'scale-current-you';
+      label.textContent = '← Your dog\'s score';
+      row.querySelector('.scale-text').appendChild(label);
+    }
+  });
+}
+
+// ── BREED AUTOCOMPLETE ────────────────────────────────────────────────────────
+const BREEDS = [
+  "Affenpinscher","Afghan Hound","Airedale Terrier","Akita","Alaskan Malamute",
+  "American Bulldog","American Cocker Spaniel","American Eskimo Dog",
+  "American Pit Bull Terrier","American Staffordshire Terrier","Australian Cattle Dog",
+  "Australian Shepherd","Australian Terrier","Basenji","Basset Hound","Beagle",
+  "Bearded Collie","Belgian Malinois","Belgian Sheepdog","Bernese Mountain Dog",
+  "Bichon Frise","Bloodhound","Border Collie","Border Terrier","Boston Terrier",
+  "Boxer","Boykin Spaniel","Brittany Spaniel","Brussels Griffon","Bull Terrier",
+  "Bulldog","Bullmastiff","Cairn Terrier","Cavalier King Charles Spaniel",
+  "Chesapeake Bay Retriever","Chihuahua","Chinese Crested","Chinese Shar-Pei",
+  "Chow Chow","Cocker Spaniel","Collie","Corgi (Cardigan Welsh)","Corgi (Pembroke Welsh)",
+  "Dachshund","Dalmatian","Doberman Pinscher","English Setter","English Springer Spaniel",
+  "French Bulldog","German Shepherd","German Shorthaired Pointer","Golden Retriever",
+  "Great Dane","Great Pyrenees","Greyhound","Havanese","Irish Setter","Irish Wolfhound",
+  "Italian Greyhound","Jack Russell Terrier","Labrador Retriever","Lhasa Apso",
+  "Maltese","Mastiff","Miniature Pinscher","Miniature Schnauzer","Mixed Breed",
+  "Newfoundland","Norwegian Elkhound","Norwich Terrier","Old English Sheepdog",
+  "Papillon","Pekingese","Pointer","Pomeranian","Poodle (Miniature)","Poodle (Standard)",
+  "Poodle (Toy)","Portuguese Water Dog","Pug","Rat Terrier","Rhodesian Ridgeback",
+  "Rottweiler","Saint Bernard","Samoyed","Schnauzer (Giant)","Schnauzer (Standard)",
+  "Scottish Terrier","Shetland Sheepdog","Shiba Inu","Shih Tzu","Siberian Husky",
+  "Staffordshire Bull Terrier","Vizsla","Weimaraner","West Highland White Terrier",
+  "Whippet","Wire Fox Terrier","Xoloitzcuintli","Yorkshire Terrier"
+];
+
+let breedActiveIndex = -1;
+
+function breedInput(val) {
+  const dd = document.getElementById('breedDropdown');
+  const q = val.trim().toLowerCase();
+  breedActiveIndex = -1;
+
+  if (!q) { dd.classList.remove('open'); dd.innerHTML = ''; return; }
+
+  // Filter: starts-with first, then contains
+  const startsWith = BREEDS.filter(b => b.toLowerCase().startsWith(q));
+  const contains   = BREEDS.filter(b => !b.toLowerCase().startsWith(q) && b.toLowerCase().includes(q));
+  const results    = [...startsWith, ...contains].slice(0, 8);
+
+  if (!results.length) {
+    dd.innerHTML = `<li class="breed-no-results">No match — you can still type your breed</li>`;
+    dd.classList.add('open');
+    return;
+  }
+
+  // Highlight matched characters
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`(${escaped})`, 'gi');
+  dd.innerHTML = results.map((b, i) =>
+    `<li role="option" data-breed="${b}" onmousedown="selectBreed('${b.replace(/'/g,"\\'")}')">
+       ${b.replace(re, '<mark>$1</mark>')}
+     </li>`
+  ).join('');
+  dd.classList.add('open');
+}
+
+function selectBreed(breed) {
+  document.getElementById('dogBreed').value = breed;
+  const dd = document.getElementById('breedDropdown');
+  dd.classList.remove('open');
+  dd.innerHTML = '';
+  breedActiveIndex = -1;
+}
+
+function breedKeydown(e) {
+  const dd = document.getElementById('breedDropdown');
+  const items = dd.querySelectorAll('li[data-breed]');
+  if (!items.length) return;
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    breedActiveIndex = Math.min(breedActiveIndex + 1, items.length - 1);
+    updateBreedActive(items);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    breedActiveIndex = Math.max(breedActiveIndex - 1, 0);
+    updateBreedActive(items);
+  } else if (e.key === 'Enter' && breedActiveIndex >= 0) {
+    e.preventDefault();
+    selectBreed(items[breedActiveIndex].dataset.breed);
+  } else if (e.key === 'Escape') {
+    dd.classList.remove('open');
+    breedActiveIndex = -1;
+  }
+}
+
+function updateBreedActive(items) {
+  items.forEach((li, i) => li.classList.toggle('kbd-active', i === breedActiveIndex));
+  if (breedActiveIndex >= 0) items[breedActiveIndex].scrollIntoView({ block: 'nearest' });
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('#breedWrap')) {
+    const dd = document.getElementById('breedDropdown');
+    if (dd) { dd.classList.remove('open'); breedActiveIndex = -1; }
+  }
+});
 
 function startOver() {
   state.imageBase64   = { right: null, left: null, front: null, lower: null };
