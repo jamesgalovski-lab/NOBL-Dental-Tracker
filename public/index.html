@@ -1746,8 +1746,10 @@ function fileToBase64(file) {
 
 function resizeImageIfNeeded(file) {
   return new Promise((resolve) => {
-    const MAX_DIMENSION = 500;
-    const QUALITY = 0.50;
+    // Increased from 500px/0.50 quality — dental photos need enough resolution
+    // for Claude to read gumlines and tartar detail, especially in lower light
+    const MAX_DIMENSION = 1024;
+    const QUALITY = 0.82;
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
